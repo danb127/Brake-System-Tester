@@ -1,0 +1,5 @@
+MANIFEST_VERSION = openstlinux-6.1-yocto-mickledore-mp1-v23.06.21
+KERNEL_DT = ./DeviceTree/MultiInputTesting/kernel
+OPTEE_DT = ./DeviceTree/MultiInputTesting/optee-os
+UBOOT_DT = ./DeviceTree/MultiInputTesting/u-boot
+TFA_DT = ./DeviceTree/MultiInputTesting/tf-a
