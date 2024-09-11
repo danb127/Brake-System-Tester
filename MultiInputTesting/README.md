@@ -1,4 +1,4 @@
-# Brake Signal Transmitter Testing with STM32MP157F-DK2
+# Brake Signal Transmitter Testing with STM32f429i-DISC1
 
 ## Overview
 In this document, I will be providing the finished code for testing the Brake Signal Transmitter and providing insight on why it works. The PWM signals frequency should read 200 Hz +- 10, tested on an oscilloscope first, then tested on the STMCubeIDE using UART and Expressions. The voltage supply should be 12 V, scaled down to 0 - 3.3V using a voltage divider or a buck converter to reach the microcontroller with proper voltage. The duty cycle at 0 mm stroke should be 12.5% +- 5% for PWM signal 1 and 87.5% +- 5% for PWM signal 2. All of this is specified in [[ZF Documentations - Brake Signal Transmitter - 480 004 002 0]].
@@ -102,7 +102,7 @@ HAL_Delay(1);
 /* USER CODE END WHILE */
 ```
 
-## stm32mp1xx_it.c Code Added for PWM Testing
+## stm32f4xx_it.c Code Added for PWM Testing
 ### Private Variables Added
 The same private variables from the main.c file are added but we use the term "extern" before adding them with no need for a declaration value because it is included in the main.c file. Basically we are importing the same variables so we can use them in both files without cross referencing. We also added variables for the last rising edge to help us accurately calculate the period and pulse width. The last rising edge variable is not declared with an "extern" term so it is the first use case of the variable, therefore, we need to declare an initial value of 0.
 
