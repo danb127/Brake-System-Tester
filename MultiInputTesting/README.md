@@ -270,3 +270,154 @@ void ITM_SendString(const char *str)
 	}
 }
 ```
+
+
+
+
+# Setting Up the STM32MP157F-DK2 Board
+## PWM Input Capture Code
+This code works on it's own as of now for the dk2 controller PWM Inputs
+### main.c
+**Variables**
+```C
+/* USER CODE BEGIN PV */
+volatile float pulse_width1 = 0;
+volatile float pulse_width2 = 0;
+volatile float period1 = 0;
+volatile float period2 = 0;
+volatile float duty_cycle1 = 0;
+volatile float duty_cycle2 = 0;
+volatile float frequency1 = 0;
+volatile float frequency2 = 0;
+/* USER CODE END PV */
+```
+**Private Funcion Prototypes**
+```C
+static void MX_TIM5_Init(void);
+static void MX_TIM3_Init(void);
+```
+**Initialize Peripherals**
+```C
+ /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_TIM5_Init();
+  MX_TIM3_Init();
+  /* USER CODE BEGIN 2 */
+  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2);
+  HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_2);
+  /* USER CODE END 2 */
+```
+**While Loop**
+```C
+ /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+	    float frequency1 = (period1 > 0) ? (((float)90000000.0f / 14.0f))  / (period1) : 0;
+	    float frequency2 = (period2 > 0) ? (float)90000000.0f / period2 : 0;
+
+	    float duty_cycle1 = (period1 > 0) ? (((float)pulse_width1) / (period1)) * 100  : 0;
+	    float duty_cycle2 = (period2 > 0) ? (float)pulse_width2 / period2 * 100 : 0;
+
+
+	    // Add a small delay to prevent getting stuck in HAL_GetTick
+	    HAL_Delay(100);
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+}
+
+```
+
+
+### stm32mp1xx_it.c:
+```C
+void TIM3_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM3_IRQn 0 */
+	  if (__HAL_TIM_GET_FLAG(&htim3, TIM_FLAG_CC2) != RESET)
+	  {
+	    if (__HAL_TIM_GET_IT_SOURCE(&htim3, TIM_IT_CC2) != RESET)
+	    {
+	      __HAL_TIM_CLEAR_IT(&htim3, TIM_IT_CC2);
+
+	      uint32_t current_capture = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_2);
+
+	      if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == GPIO_PIN_SET)
+	      {
+	        // Rising edge
+	        if (current_capture > last_rising_edge1)
+	          period1 = current_capture - last_rising_edge1;
+	        else
+	          period1 = (65536 + current_capture) - last_rising_edge1;
+
+	        last_rising_edge1 = current_capture;
+	      }
+	      else
+	      {
+	        // Falling edge
+	        if (current_capture > last_rising_edge1)
+	          pulse_width1 = current_capture - last_rising_edge1;
+	        else
+	          pulse_width1 = (65536 + current_capture) - last_rising_edge1;
+	      }
+	    }
+	  }
+
+  /* USER CODE END TIM3_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim3);
+  /* USER CODE BEGIN TIM3_IRQn 1 */
+
+  /* USER CODE END TIM3_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM5 global interrupt.
+  */
+void TIM5_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM5_IRQn 0 */
+	  if (__HAL_TIM_GET_FLAG(&htim5, TIM_FLAG_CC2) != RESET)
+	  {
+		  if (__HAL_TIM_GET_IT_SOURCE(&htim5, TIM_IT_CC2) != RESET)
+		  {
+			  __HAL_TIM_CLEAR_IT(&htim5, TIM_IT_CC2);
+
+			  uint32_t current_capture = HAL_TIM_ReadCapturedValue(&htim5, TIM_CHANNEL_2);
+
+			  if (HAL_GPIO_ReadPin(GPIOH, GPIO_PIN_11) == GPIO_PIN_SET) // PA11 is the input pin for TIM5
+			  {
+				  // Rising edge
+				  period2 = current_capture - last_rising_edge2;
+				  last_rising_edge2 = current_capture;
+			  }
+			  else
+			  {
+				  // Falling edge
+				  pulse_width2 = current_capture - last_rising_edge2;
+			  }
+		  }
+	  }
+  /* USER CODE END TIM5_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim5);
+  /* USER CODE BEGIN TIM5_IRQn 1 */
+
+  /* USER CODE END TIM5_IRQn 1 */
+}
+
+```
+
+## ADC Enable
+Some ADC pins are available with this starter package Device Tree on DK2 board (please also refer to [board documentation](https://www.st.com/en/evaluation-tools/stm32mp157f-dk2.html#documentation):(
+
+- ADC1_INP0 and ADC2_INP0 on pin ANA0 (Arduino connector A2)
+- ADC1_INP1 and ADC2_INP0 on pin ANA1 (Arduino connector A3)
+- ADC1_INP6 on pin PF12 (Arduino connector A5)
+- ADC1_INP13 on pin PC3 (Arduino connector A4)
+- ADC2_INP2 on pin PF13 (Arduino connector A1)
+- ADC2_INP6 on PF14 (Arduino connector A0)
+  
+- When I add adc_start_it, tim_start_it stops working and adc only runs once
+
