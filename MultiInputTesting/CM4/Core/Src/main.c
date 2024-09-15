@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "openamp.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -35,6 +36,12 @@ typedef struct {
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define MSG_TYPE_BST 1
+#define MSG_TYPE_BST_WITH_STRINGPOT 2
+#define MSG_TYPE_PRESSURE_SENSOR 3
+#define MSG_TYPE_WEAR_SENSOR 4
+#define MSG_TYPE_ESCM 5
+
 extern volatile PressureReading latest_pressure;
 /* USER CODE END PD */
 
@@ -45,7 +52,8 @@ extern volatile PressureReading latest_pressure;
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
-ADC_HandleTypeDef hadc2;
+
+FDCAN_HandleTypeDef hfdcan1;
 
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim5;
@@ -69,9 +77,9 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_ADC1_Init(void);
-static void MX_ADC2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_USART3_UART_Init(void);
+static void MX_FDCAN1_Init(void);
 /* USER CODE BEGIN PFP */
 void Debug_Print(const char *format, ...);
 /* USER CODE END PFP */
@@ -79,6 +87,43 @@ void Debug_Print(const char *format, ...);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+// Function to handle incoming requests from the A7 core
+void process_request(uint32_t request_type)
+{
+    // Disable all peripherals at first
+    HAL_TIM_IC_Stop_IT(&htim3, TIM_CHANNEL_2);
+    HAL_TIM_IC_Stop_IT(&htim5, TIM_CHANNEL_2);
+    HAL_ADC_Stop_IT(&hadc1);
+
+    switch(request_type)
+    {
+        case MSG_TYPE_BST:
+            // Enable the PWM timers
+            HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2);
+            HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_2);
+            break;
+        case MSG_TYPE_BST_WITH_STRINGPOT:
+            // Enable the PWM timers
+            HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2);
+            HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_2);
+            // Enable the string potentiometer
+            HAL_ADC_Start_IT(&hadc1);
+            break;
+        case MSG_TYPE_PRESSURE_SENSOR:
+            // Enable the pressure sensor
+            HAL_ADC_Start_IT(&hadc1);
+            break;
+        case MSG_TYPE_WEAR_SENSOR:
+            // Enable the wear sensor
+            HAL_ADC_Start_IT(&hadc1);
+            break;
+        case MSG_TYPE_ESCM:
+            // Enable the ESCM
+            break;
+        default:
+            break;
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -114,14 +159,10 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM5_Init();
   MX_ADC1_Init();
-  MX_ADC2_Init();
   MX_TIM3_Init();
   MX_USART3_UART_Init();
+  MX_FDCAN1_Init();
   /* USER CODE BEGIN 2 */
-  //HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2);
-  //HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_2);
- HAL_ADC_Start_IT(&hadc1);
- //HAL_ADC_Start_IT(&hadc2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -293,60 +334,55 @@ static void MX_ADC1_Init(void)
 }
 
 /**
-  * @brief ADC2 Initialization Function
+  * @brief FDCAN1 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_ADC2_Init(void)
+static void MX_FDCAN1_Init(void)
 {
 
-  /* USER CODE BEGIN ADC2_Init 0 */
+  /* USER CODE BEGIN FDCAN1_Init 0 */
 
-  /* USER CODE END ADC2_Init 0 */
+  /* USER CODE END FDCAN1_Init 0 */
 
-  ADC_ChannelConfTypeDef sConfig = {0};
+  /* USER CODE BEGIN FDCAN1_Init 1 */
 
-  /* USER CODE BEGIN ADC2_Init 1 */
-
-  /* USER CODE END ADC2_Init 1 */
-
-  /** Common config
-  */
-  hadc2.Instance = ADC2;
-  hadc2.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
-  hadc2.Init.Resolution = ADC_RESOLUTION_12B;
-  hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
-  hadc2.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-  hadc2.Init.LowPowerAutoWait = DISABLE;
-  hadc2.Init.ContinuousConvMode = ENABLE;
-  hadc2.Init.NbrOfConversion = 1;
-  hadc2.Init.DiscontinuousConvMode = DISABLE;
-  hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-  hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc2.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DR;
-  hadc2.Init.Overrun = ADC_OVR_DATA_PRESERVED;
-  hadc2.Init.LeftBitShift = ADC_LEFTBITSHIFT_NONE;
-  hadc2.Init.OversamplingMode = DISABLE;
-  if (HAL_ADC_Init(&hadc2) != HAL_OK)
+  /* USER CODE END FDCAN1_Init 1 */
+  hfdcan1.Instance = FDCAN1;
+  hfdcan1.Init.FrameFormat = FDCAN_FRAME_CLASSIC;
+  hfdcan1.Init.Mode = FDCAN_MODE_NORMAL;
+  hfdcan1.Init.AutoRetransmission = DISABLE;
+  hfdcan1.Init.TransmitPause = DISABLE;
+  hfdcan1.Init.ProtocolException = DISABLE;
+  hfdcan1.Init.NominalPrescaler = 16;
+  hfdcan1.Init.NominalSyncJumpWidth = 1;
+  hfdcan1.Init.NominalTimeSeg1 = 2;
+  hfdcan1.Init.NominalTimeSeg2 = 2;
+  hfdcan1.Init.DataPrescaler = 1;
+  hfdcan1.Init.DataSyncJumpWidth = 1;
+  hfdcan1.Init.DataTimeSeg1 = 1;
+  hfdcan1.Init.DataTimeSeg2 = 1;
+  hfdcan1.Init.MessageRAMOffset = 0;
+  hfdcan1.Init.StdFiltersNbr = 0;
+  hfdcan1.Init.ExtFiltersNbr = 0;
+  hfdcan1.Init.RxFifo0ElmtsNbr = 0;
+  hfdcan1.Init.RxFifo0ElmtSize = FDCAN_DATA_BYTES_8;
+  hfdcan1.Init.RxFifo1ElmtsNbr = 0;
+  hfdcan1.Init.RxFifo1ElmtSize = FDCAN_DATA_BYTES_8;
+  hfdcan1.Init.RxBuffersNbr = 0;
+  hfdcan1.Init.RxBufferSize = FDCAN_DATA_BYTES_8;
+  hfdcan1.Init.TxEventsNbr = 0;
+  hfdcan1.Init.TxBuffersNbr = 0;
+  hfdcan1.Init.TxFifoQueueElmtsNbr = 0;
+  hfdcan1.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
+  hfdcan1.Init.TxElmtSize = FDCAN_DATA_BYTES_8;
+  if (HAL_FDCAN_Init(&hfdcan1) != HAL_OK)
   {
     Error_Handler();
   }
+  /* USER CODE BEGIN FDCAN1_Init 2 */
 
-  /** Configure Regular Channel
-  */
-  sConfig.Channel = ADC_CHANNEL_2;
-  sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-  sConfig.SingleDiff = ADC_SINGLE_ENDED;
-  sConfig.OffsetNumber = ADC_OFFSET_NONE;
-  sConfig.Offset = 0;
-  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN ADC2_Init 2 */
-
-  /* USER CODE END ADC2_Init 2 */
+  /* USER CODE END FDCAN1_Init 2 */
 
 }
 
@@ -505,6 +541,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();

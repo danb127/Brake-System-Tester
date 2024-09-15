@@ -76,7 +76,6 @@ static float Wear_Calc(uint32_t adc2_value);
 
 /* External variables --------------------------------------------------------*/
 extern ADC_HandleTypeDef hadc1;
-extern ADC_HandleTypeDef hadc2;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim5;
 /* USER CODE BEGIN EV */
@@ -313,26 +312,6 @@ void TIM5_IRQHandler(void)
   /* USER CODE BEGIN TIM5_IRQn 1 */
 
   /* USER CODE END TIM5_IRQn 1 */
-}
-
-/**
-  * @brief This function handles ADC2 global interrupt.
-  */
-void ADC2_IRQHandler(void)
-{
-  /* USER CODE BEGIN ADC2_IRQn 0 */
-	if(__HAL_ADC_GET_FLAG(&hadc2, ADC_FLAG_EOC) == SET)
-	{
-		__HAL_ADC_CLEAR_FLAG(&hadc2, ADC_FLAG_EOC);
-		adc2_value = HAL_ADC_GetValue(&hadc2);
-		latest_wear = Wear_Calc(adc2_value);
-		HAL_ADC_Start_IT(&hadc2);
-	}
-  /* USER CODE END ADC2_IRQn 0 */
-  HAL_ADC_IRQHandler(&hadc2);
-  /* USER CODE BEGIN ADC2_IRQn 1 */
-
-  /* USER CODE END ADC2_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
