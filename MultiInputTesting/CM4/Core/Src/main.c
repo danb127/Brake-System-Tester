@@ -32,6 +32,25 @@ typedef struct {
     float bar;
     float psi;
 } PressureReading;
+
+typedef struct {
+    float stroke;
+    float duty_cycle1_min;
+    float duty_cycle1_max;
+    float duty_cycle2_min;
+    float duty_cycle2_max;
+} BSTTestPoint;
+
+typedef struct {
+    uint32_t timestamp;
+    float frequency1;
+    float duty_cycle1;
+    float frequency2;
+    float duty_cycle2;
+    float stroke;
+    bool stroke_valid;
+    bool test_passed;
+} BSTData;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -70,6 +89,20 @@ volatile float duty_cycle2 = 0;
 volatile float frequency1 = 0;
 volatile float frequency2 = 0;
 volatile float latest_wear = 0;
+
+// 0 mm stroke, 12.5% +- 3.5% and 87.5% +-3.5 %
+// 2 mm stroke, 24.4% +- 3.5% and 75.7% +- 3.5%
+// 4 mm stroke, 36.3% +- 3.5% and 63.7% +- 3.5%
+// 6 mm stroke, 48.3% +- 3.5% and 51.7% +- 3.5%
+// 8 mm stroke, 63.2% +- 3.5% and 36.8% +- 3.5%
+
+const BSTTestPoint bst_test_points[] = {
+    {0.0f, 9.0f, 16.0f, 84.0f, 91.0f},
+    {2.0f, 20.9f, 27.9f, 72.2f, 79.2f},
+    {4.0f, 32.8f, 39.8f, 60.2f, 67.2f},
+    {6.0f, 44.8f, 51.8f, 48.2f, 55.2f},
+    {8.0f, 59.7f, 66.7f, 33.3f, 40.3f}
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -82,11 +115,31 @@ static void MX_USART3_UART_Init(void);
 static void MX_FDCAN1_Init(void);
 /* USER CODE BEGIN PFP */
 void Debug_Print(const char *format, ...);
+void process_request(uint32_t request_type);
+void OPENAMP_MPU_RemoteHandler(uint32_t *msg);
+void send_data_to_a7(uint32_t *data, int size);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+// Function to check measured values against test points
+bool check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
+{
+    // For loop to iterate through the test points
+    for (int i = 0; i < sizeof(bst_test_points) / sizeof(BSTTestPoint); i++)
+    {
+        // Check if the stroke is within 0.1 mm of the test point
+        if (fabsf(stroke - bst_test_points[i].stroke < 0.1f)
+        {
+            
+            return (duty_cycle1 >= bst_test_points[i].duty_cycle1_min &&
+            duty_cycle1 <= bst_test_points[i].duty_cycle1_max &&
+            duty_cycle2 >= bst_test_points[i].duty_cycle2_min &&
+            duty_cycle2 <= bst_test_points[i].duty_cycle2_max);
+        }
+    }
+    return false;
+}
 // Function to handle incoming requests from the A7 core
 void process_request(uint32_t request_type)
 {
@@ -123,6 +176,20 @@ void process_request(uint32_t request_type)
         default:
             break;
     }
+}
+
+// Function to handle incoming messages from the A7 core
+void OPENAMP_MPU_RemoteHandler(uint32_t *msg)
+{
+    uint32_t request_type = msg[0];
+    process_request(request_type);
+}
+
+// Function to send data to the A7 core
+void send_data_to_a7(uint32_t *data, int size)
+{
+    // Might need to serialize the data before sending
+    OPENAMP_send(&rpmsg_channel, (uint32_t*) data, sizeof(BSTData));
 }
 /* USER CODE END 0 */
 
@@ -169,20 +236,60 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	    float frequency1 = (period1 > 0) ? (((float)90000000.0f / 14.0f))  / (period1) : 0;
-	    float frequency2 = (period2 > 0) ? (float)90000000.0f / period2 : 0;
 
-	    float duty_cycle1 = (period1 > 0) ? (((float)pulse_width1) / (period1)) * 100  : 0;
-	    float duty_cycle2 = (period2 > 0) ? (float)pulse_width2 / period2 * 100 : 0;
+    // Check for any incoming messages from the A7 core continuously
+    OPENAMP_check_for_message();
 
-	    float voltage = latest_pressure.voltage;
+    // Check if the BST test is active
+    if (bst_active || bst_with_stringpot_active)
+    {
+        // Create a new BSTData struct to store the data
+        BSTData bst_data = {0};
+
+        // Get the current timestamp
+        bst_data.timestamp = HAL_GetTick(); // Get the current timestamp
+        
+        // Calculate the frequency and duty cycle for the PWM signals
+        bst_data.frequency1 = (period1 > 0) ? (((float)90000000.0f / 14.0f))  / (period1) : 0;
+	    bst_data.frequency2 = (period2 > 0) ? (float)90000000.0f / period2 : 0;
+
+	    bst_data.duty_cycle1 = (period1 > 0) ? (((float)pulse_width1) / (period1)) * 100  : 0;
+	    bst_data.duty_cycle2 = (period2 > 0) ? (float)pulse_width2 / period2 * 100 : 0;
+
+        
+        float stroke = 0.0f;
+        bool bst_passed = false;
+        
+        if (bst_with_stringpot_active) {
+            // Read the stroke value from the ADC
+            float stringpot_voltage = (float)HAL_ADC_GetValue(&hadc1) * (3.3f / 4095.0f);
+            bst_data.stroke = (stringpot_voltage - 0.5f) * 100.0f;
+            
+            // Check BST values including stroke
+            bst_data.bst_passed = check_bst_values(stroke, duty_cycle1, duty_cycle2);
+        }
+        else {
+            // Check BST values without stroke
+            // Have to work on this to send the expected value for stroke data since no stringpot is used
+            bst_data.bst_passed = check_bst_values(stroke, duty_cycle1, duty_cycle2);
+        }
+
+        send_data_to_a7((uint32_t*)&bst_data, sizeof(BSTData));
+    }
+	
+
+
+
+
+
+        // Voltage value from the pressure sensor       
+        float voltage = latest_pressure.voltage;
+
+        // Pressure values from the pressure sensor
 	    float pressure_bar = latest_pressure.bar;
-	    float pressure_psi = latest_pressure.psi;
 
-	    char msg[100];
-	    snprintf(msg, sizeof(msg), "PWM1: Freq=%.2f Hz, Duty=%.2f%% | PWM2: Freq=%.2f Hz, Duty=%.2f%%\n | Pressure: %.2f bar, %.2f PSI",
-	             frequency1, duty_cycle1, frequency2, duty_cycle2, latest_pressure.bar, latest_pressure.psi);
-	    Debug_Print(msg);
+        // Pressure values from the pressure sensor
+	    float pressure_psi = latest_pressure.psi;
 
 
 	    // Add a small delay to prevent getting stuck in HAL_GetTick
