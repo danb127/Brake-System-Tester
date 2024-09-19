@@ -498,6 +498,29 @@ void perform_bst_test(void)
     send_bst_data(&bst_data);
 }
 
+// Checking the BST values
+int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
+{
+    for (int i = 0; i < sizeof(bst_test_points) / sizeof(BSTTestPoint); i++)
+    {
+        if (fabsf(stroke - bst_test_points[i].stroke) < 0.1f)
+        {
+            if (duty_cycle1 >= bst_test_points[i].duty_cycle1_min &&
+                duty_cycle1 <= bst_test_points[i].duty_cycle1_max &&
+                duty_cycle2 >= bst_test_points[i].duty_cycle2_min &&
+                duty_cycle2 <= bst_test_points[i].duty_cycle2_max)
+            {
+                return 1; // Test passed
+            }
+            else
+            {
+                return 0; // Test failed
+            }
+        }
+    }
+    return 0; // Test failed if no matching stroke found
+}
+
 void send_bst_data(BSTData *data)
 {
     uint8_t buffer[sizeof(BSTData) + 2];
