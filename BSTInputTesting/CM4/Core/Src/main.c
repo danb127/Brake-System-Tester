@@ -24,7 +24,7 @@
 /* USER CODE BEGIN Includes */
 /* USER CODE BEGIN Includes */
 #include "openamp.h"
-#include "rpmsg.h"
+//#include "rpmsg.h"
 #include <math.h>
 #include <string.h>
 #include <stdint.h>
@@ -69,12 +69,16 @@ VIRT_UART_HandleTypeDef huart0;
 #define MAX_BUFFER_SIZE RPMSG_BUFFER_SIZE
 #define MSG_TYPE_BST 1
 #define MSG_TYPE_BST_WITH_STRINGPOT 2
+
+#define START_MARKER 0x02  // Start of Text
+#define END_MARKER   0x03  // End of Text
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
-/* USER CODE END PM */
+/* USER CODE END PM */#define START_MARKER 0x02  // Start of Text
+#define END_MARKER   0x03  // End of Text
 
 /* Private variables ---------------------------------------------------------*/
 IPCC_HandleTypeDef hipcc;
@@ -440,7 +444,7 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
 void process_received_message(void)
 {
     // If A7 core message is a single byte to indicate the test should start
-    uint8_t request type = VirtUart0ChannelBuffRx[0];
+    uint8_t request_type = VirtUart0ChannelBuffRx[0];
 
     // Reset which test
     bst_active = 0;
@@ -473,8 +477,8 @@ void perform_bst_test(void)
     bst_data.timestamp = HAL_GetTick();
 
     // Calculating the frequency and duty cycle for both channels
-    bst_data.frequency1 = (period1 > 0) ? ((float SystemCoreClock) / ((htim3.Init.Prescaler + 1) * period1)) : 0;
-    bst_data.frequency2 = (period2 > 0) ? ((float SystemCoreClock) / ((htim5.Init.Prescaler + 1) * period2)) : 0;
+    bst_data.frequency1 = (period1 > 0) ? (((float) SystemCoreClock) / ((htim3.Init.Prescaler + 1) * period1)) : 0;
+    bst_data.frequency2 = (period2 > 0) ? (((float) SystemCoreClock) / ((htim5.Init.Prescaler + 1) * period2)) : 0;
 
     bst_data.duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
     bst_data.duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
@@ -523,6 +527,8 @@ int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
 
 void send_bst_data(BSTData *data)
 {
+
+
     uint8_t buffer[sizeof(BSTData) + 2];
     buffer[0] = START_MARKER;
     memcpy(&buffer[1], data, sizeof(BSTData));
