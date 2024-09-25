@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 /* USER CODE BEGIN Includes */
 #include "openamp.h"
+#include "openamp_log.h"
 //#include "rpmsg.h"
 #include <math.h>
 #include <string.h>
@@ -42,22 +43,6 @@ typedef struct {
     float duty_cycle2_max;
 } BSTTestPoint;
 
-// Ensuring that the struct is packed to avoid padding bytes
-typedef struct __attribute__((packed)) {
-    // Timestamp in milliseconds
-    uint32_t timestamp;
-    // Frequency in Hz
-    float frequency1;
-    // Duty cycle in percentage
-    float duty_cycle1;
-    float frequency2;
-    float duty_cycle2;
-    // Stroke in mm 
-    float stroke;
-    uint8_t stroke_valid;
-    uint8_t test_passed;
-} BSTData;
-
 // Virtual UART handle for RPMsg communication with the remote core
 VIRT_UART_HandleTypeDef huart0;
 
@@ -70,16 +55,14 @@ VIRT_UART_HandleTypeDef huart0;
 #define MSG_TYPE_BST 1
 #define MSG_TYPE_BST_WITH_STRINGPOT 2
 
-#define START_MARKER 0x02  // Start of Text
-#define END_MARKER   0x03  // End of Text
+#define LOGLEVEL LOGINFO
+#define __LOG_UART_IO_
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
-/* USER CODE END PM */#define START_MARKER 0x02  // Start of Text
-#define END_MARKER   0x03  // End of Text
-
+/* USER CODE END PM *
 /* Private variables ---------------------------------------------------------*/
 IPCC_HandleTypeDef hipcc;
 
@@ -143,17 +126,12 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart);
 // Callback function for the virtual UART transmission to the A7 core
 void VIRT_UART0_TxCpltCallback(VIRT_UART_HandleTypeDef *huart);
 
-// Function to process the received message from the A7 core
-void process_received_message(void);
-
-// Function to perform the BST test
+// Function to perform thelog_info("Msg received on VIRTUAL UART0 channel:  %s \n\r", (char *) huart->pRxBuffPtr); BST test
 void perform_bst_test(void);
 
 // Function to perform the BST test with string potentiometer
 int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2);
 
-// Function to send the BST data to the A7 core
-void send_bst_data(BSTData *data);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -203,14 +181,52 @@ int main(void)
   MX_TIM5_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2);
-  HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_2);
+  // Start Timer 3 Channel 2 for PWM Output 1
+  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2); // For PWM1 (S1)
+
+  // Start Timer 5 Channel 2 for PWM Output 2
+  HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_2); // For PWM2 (S2)
+
+  /*
+    * Create Virtual UART device
+    * defined by a rpmsg channel attached to the remote device
+    */
+   log_info("Virtual UART0 OpenAMP-rpmsg channel creation\r\n");
+   if (VIRT_UART_Init(&huart0) != VIRT_UART_OK) {
+     log_err("VIRT_UART_Init UART0 failed.\r\n");
+     Error_Handler();
+   }
+
+   /*Need to register callback for message reception by channels*/
+   if(VIRT_UART_RegisterCallback(&huart0, VIRT_UART_RXCPLT_CB_ID, VIRT_UART0_RxCpltCallback) != VIRT_UART_OK)
+   {
+    Error_Handler();
+   }
+
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  OPENAMP_check_for_message();
+
+	  if (VirtUart0RxMsg) {
+		  VirtUart0RxMsg = RESET;
+		  VIRT_UART_Transmit(&huart0, VirtUart0ChannelBuffRx, VirtUart0ChannelRxSize);
+	  }
+
+	    // Calculating the frequency and duty cycle for both channels
+	    frequency1 = (period1 > 0) ? (((float) SystemCoreClock) / ((htim3.Init.Prescaler + 1) * period1)) : 0;
+	    frequency2 = (period2 > 0) ? (((float) SystemCoreClock) / ((htim5.Init.Prescaler + 1) * period2)) : 0;
+
+	    duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
+	    duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
+
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -431,76 +447,33 @@ static void MX_GPIO_Init(void)
 // Callback function for the virtual UART reception from the A7 core
 void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
 {
+
+	char* strmsg = (char*) huart->pRxBuffPtr;
+
+	char* msg = 0;
+
+	if (strcmp(strmsg,"test"))
+	{
+		msg = "BST Test Acknowledged\n";
+		log_info("BST Data:\n")
+	}
+	else
+	{
+		msg = "Wrong Message\n";
+		log_info("%s Not a Message: BST Test Not Started\n", strmsg);
+	}
+
+
     /* Copy received message into buffer */
     // Limit the size of the received message to the maximum buffer size or the size of the message
-    VirtUart0ChannelRxSize = huart->RxXferSize < MAX_BUFFER_SIZE ? huart->RxXferSize : MAX_BUFFER_SIZE - 1;
+    VirtUart0ChannelRxSize = strlen(msg) < MAX_BUFFER_SIZE ? strlen(msg) : MAX_BUFFER_SIZE - 1;
     // Copy the received message into the buffer
-    memcpy(VirtUart0ChannelBuffRx, huart->pRxBuffPtr, VirtUart0ChannelRxSize);
+    memcpy(VirtUart0ChannelBuffRx, strlen(msg), VirtUart0ChannelRxSize);
     // Set the flag to indicate that a message has been received
     VirtUart0RxMsg = SET;
 }
 
-//
-void process_received_message(void)
-{
-    // If A7 core message is a single byte to indicate the test should start
-    uint8_t request_type = VirtUart0ChannelBuffRx[0];
 
-    // Reset which test
-    bst_active = 0;
-    bst_with_stringpot_active = 0;
-
-    switch (request_type)
-    {
-        case MSG_TYPE_BST:
-            bst_active = 1;
-            break;
-        case MSG_TYPE_BST_WITH_STRINGPOT:
-            bst_with_stringpot_active = 1;
-            break;
-        default:
-            break;
-    }
-
-    // Sending acknowledgement to the A7 core
-    const char *ack = "Received";
-    VIRT_UART_Transmit(&huart0, (uint8_t *)ack, strlen(ack));
-}
-
-// Function to perform the BST test
-void perform_bst_test(void)
-{
-    // Initializing BST data
-    BSTData bst_data = {0};
-
-    // Getting the current time in milliseconds
-    bst_data.timestamp = HAL_GetTick();
-
-    // Calculating the frequency and duty cycle for both channels
-    bst_data.frequency1 = (period1 > 0) ? (((float) SystemCoreClock) / ((htim3.Init.Prescaler + 1) * period1)) : 0;
-    bst_data.frequency2 = (period2 > 0) ? (((float) SystemCoreClock) / ((htim5.Init.Prescaler + 1) * period2)) : 0;
-
-    bst_data.duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
-    bst_data.duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
-
-    if (bst_with_stringpot_active)
-    {
-        // Need to implement ADC and string pot specs need to be read first
-        // bst_data.stroke = Read_Stroke_From_ADC();
-        bst_data.stroke_valid = 1;
-    }   
-    else
-    {
-        bst_data.stroke = 0;
-        bst_data.stroke_valid = 0;
-    }
-
-    // Checking if the test passed
-    bst_data.test_passed = check_bst_values(bst_data.stroke, bst_data.duty_cycle1, bst_data.duty_cycle2);
-
-    // Sending the BST data to the A7 core
-    send_bst_data(&bst_data);
-}
 
 // Checking the BST values
 int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
@@ -525,17 +498,6 @@ int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
     return 0; // Test failed if no matching stroke found
 }
 
-void send_bst_data(BSTData *data)
-{
-
-
-    uint8_t buffer[sizeof(BSTData) + 2];
-    buffer[0] = START_MARKER;
-    memcpy(&buffer[1], data, sizeof(BSTData));
-    buffer[sizeof(BSTData) + 1] = END_MARKER;
-
-    VIRT_UART_Transmit(&huart0, buffer, sizeof(buffer));
-}
 /* USER CODE END 4 */
 
 /**

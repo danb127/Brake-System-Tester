@@ -57,7 +57,8 @@
    * @brief This is the list of modules to be used in the OpenAMP Virtual driver module
    *        Please note that virtual driver are not supported on all stm32 families
    */
-//#define VIRTUAL_UART_MODULE_ENABLED
+// Had to uncomment
+ #define VIRTUAL_UART_MODULE_ENABLED
 //#define VIRTUAL_I2C_MODULE_ENABLED
 
  /* Includes ------------------------------------------------------------------*/
