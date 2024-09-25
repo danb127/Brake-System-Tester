@@ -25,7 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "openamp.h"
 #include "openamp_log.h"
-//#include "rpmsg.h"
+#include <float.h>
 #include <math.h>
 #include <string.h>
 #include <stdint.h>
@@ -62,7 +62,7 @@ VIRT_UART_HandleTypeDef huart0;
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
-/* USER CODE END PM *
+/* USER CODE END PM */
 /* Private variables ---------------------------------------------------------*/
 IPCC_HandleTypeDef hipcc;
 
@@ -78,9 +78,10 @@ volatile float duty_cycle1 = 0;
 volatile float duty_cycle2 = 0;
 volatile float frequency1 = 0;
 volatile float frequency2 = 0;
+volatile float stroke = 0;
 
 uint8_t bst_active = 0;
-uint8_t bst_with_stringpot_active = 0;
+uint8_t use_stringpot = 0;
 
 // 0 mm stroke, 12.5% +- 3.5% and 87.5% +-3.5 %
 // 2 mm stroke, 24.4% +- 3.5% and 75.7% +- 3.5%
@@ -126,11 +127,11 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart);
 // Callback function for the virtual UART transmission to the A7 core
 void VIRT_UART0_TxCpltCallback(VIRT_UART_HandleTypeDef *huart);
 
-// Function to perform thelog_info("Msg received on VIRTUAL UART0 channel:  %s \n\r", (char *) huart->pRxBuffPtr); BST test
-void perform_bst_test(void);
-
 // Function to perform the BST test with string potentiometer
 int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2);
+
+// Function to calculate estimated stroke if no string potentiometer is selected
+float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2);
 
 /* USER CODE END PFP */
 
@@ -225,6 +226,37 @@ int main(void)
 	    duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
 	    duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
 
+	    if (use_stringpot)
+	    {
+	    	// Using String Potentiometer
+
+	    	// Read the stroke value from ADC
+	    	stroke = read_stroke_from_adc();
+
+	    	// Check if the duty cycles are acceptable for the measured stroke
+	    	int test_passed = check_bst_values(stroke, duty_cycle1, duty_cycle2);
+
+	    	if (test_passed)
+	    	{
+	    		// Test Passed
+	    		log_info("BST Test Passed for Stroke: %2f mm\n Duty Cycles were: %.2f and %.2f\n", stroke, duty_cycle1, duty_cycle2);
+	    	}
+	    	else
+	    	{
+	    		// Test Failed
+	    		log_info("BST Test Failed for Stroke: %.2f mm\n Duty Cycles were: %.2f and %.2f\n", stroke, duty_cycle1, duty_cycle2);
+	    	}
+	    }
+	    // If string potentiometer is not being used
+	    else
+	    {
+	    	// Not Using String Potentiometer
+
+
+	    	float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
+
+	    	log_info("Estimated Stroke is: %.2f mm\n Duty Cycles were: %.2f and %.2f", estimated_stroke, duty_cycle1, duty_cycle2);
+	    }
 
 
     /* USER CODE END WHILE */
@@ -478,7 +510,9 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
 // Checking the BST values
 int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
 {
-    for (int i = 0; i < sizeof(bst_test_points) / sizeof(BSTTestPoint); i++)
+    int num_points = sizeof(bst_test_points) / sizeof(BSTTestPoint);
+
+	for (int i = 0; i < num_points; i++)
     {
         if (fabsf(stroke - bst_test_points[i].stroke) < 0.1f)
         {
@@ -496,6 +530,46 @@ int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
         }
     }
     return 0; // Test failed if no matching stroke found
+}
+
+// Estimate stroke from the given duty cycles if no string potentiometer
+float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
+{
+	// Getting the number of test points (5) = 25 / 5
+	int num_points = sizeof(bst_test_points) / sizeof(BSTTestPoint);
+
+	// Initializing the minimum error to the maximum floating point
+	float min_error = FLT_MAX;
+
+	// Initializing the stroke to 0
+	float estimated_stroke = 0.0f;
+
+	// Iterate through the 5 test points
+	for(int i = 0; i < num_points; i++)
+	{
+		// Average of the duty cycle 1 max and min for test point i
+		float avg_duty_cycle1 = (bst_test_points[i].duty_cycle1_min + bst_test_points[i].duty_cycle1_max) / 2.0f;
+		// Average of the duty cycle 2 max and min for test point i
+		float avg_duty_cycle2 = (bst_test_points[i].duty_cycle2_min + bst_test_points[i].duty_cycle2_max) / 2.0f;
+
+
+		// Calculate sum of absolute differences between measured duty cycles and their average expected duty cycles
+		float error_case1 = fabsf(duty_cycle1 - avg_duty_cycle1) + fabsf(duty_cycle2 - avg_duty_cycle2);
+		// Calculate sum of absolute differences in case the measured duty cycle pins are swapped from the expected average duty cycles
+		float error_case2 = fabsf(duty_cycle1 - avg_duty_cycle2) + fabsf(duty_cycle2 - avg_duty_cycle1);
+
+		// Choosing the smaller error of the 2 cases to ensure best stroke correlation (smallest error), regardless or duty cycle order
+		float total_error = (error_case1 < error_case2) ? error_case1 : error_case2;
+
+		// Updating the estimated stroke if lower total error is found within test points
+		if (total_error < min_error)
+		{
+			min_error = total_error;
+			estimated_stroke = bst_test_points[i].stroke;
+		}
+	}
+
+	return estimated_stroke;
 }
 
 /* USER CODE END 4 */
