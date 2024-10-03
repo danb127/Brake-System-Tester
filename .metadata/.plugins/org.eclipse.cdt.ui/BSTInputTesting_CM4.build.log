@@ -1,0 +1,31 @@
+10:43:50 **** Incremental Build of configuration Debug for project BSTInputTesting_CM4 ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:234:26: warning: implicit declaration of function 'read_stroke_from_adc' [-Wimplicit-function-declaration]
+  234 |                 stroke = read_stroke_from_adc();
+      |                          ^~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:256:23: warning: unused variable 'estimated_stroke' [-Wunused-variable]
+  256 |                 float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
+      |                       ^~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'VIRT_UART0_RxCpltCallback':
+../Core/Src/main.c:503:36: warning: passing argument 2 of 'memcpy' makes pointer from integer without a cast [-Wint-conversion]
+  503 |     memcpy(VirtUart0ChannelBuffRx, strlen(msg), VirtUart0ChannelRxSize);
+      |                                    ^~~~~~~~~~~
+      |                                    |
+      |                                    size_t {aka unsigned int}
+In file included from ../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include/openamp/rpmsg.h:19,
+                 from ../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include/openamp/open_amp.h:11,
+                 from ../OPENAMP/openamp.h:25,
+                 from ../Core/Src/main.c:21:
+/opt/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.linux64_1.0.200.202406132123/tools/arm-none-eabi/include/string.h:31:36: note: expected 'const void * restrict' but argument is of type 'size_t' {aka 'unsigned int'}
+   31 | void *   memcpy (void *__restrict, const void *__restrict, size_t);
+arm-none-eabi-gcc -o "BSTInputTesting_CM4.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/danb127/Brake-System-Tester/BSTInputTesting/CM4/STM32MP157FACX_RAM.ld" --specs=nosys.specs -Wl,-Map="BSTInputTesting_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+/opt/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.linux64_1.0.200.202406132123/tools/bin/../lib/gcc/arm-none-eabi/12.3.1/../../../../arm-none-eabi/bin/ld: ./Core/Src/main.o: in function `main':
+/home/danb127/Brake-System-Tester/BSTInputTesting/CM4/Debug/../Core/Src/main.c:234: undefined reference to `read_stroke_from_adc'
+collect2: error: ld returned 1 exit status
+make: *** [makefile:67: BSTInputTesting_CM4.elf] Error 1
+"make -j8 all" terminated with exit code 2. Build might be incomplete.
+
+10:43:50 Build Failed. 2 errors, 3 warnings. (took 778ms)
+

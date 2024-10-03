@@ -59,6 +59,7 @@ volatile uint32_t last_rising_edge1 = 0, last_rising_edge2 = 0;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern ADC_HandleTypeDef hadc1;
 extern IPCC_HandleTypeDef hipcc;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim5;
@@ -205,9 +206,22 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles ADC1 global interrupt.
+  */
+void ADC1_IRQHandler(void)
+{
+  /* USER CODE BEGIN ADC1_IRQn 0 */
+
+  /* USER CODE END ADC1_IRQn 0 */
+  HAL_ADC_IRQHandler(&hadc1);
+  /* USER CODE BEGIN ADC1_IRQn 1 */
+
+  /* USER CODE END ADC1_IRQn 1 */
+}
+
+/**
   * @brief This function handles TIM3 global interrupt.
   */
-
 void TIM3_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM3_IRQn 0 */
@@ -247,7 +261,6 @@ void TIM3_IRQHandler(void)
   /* USER CODE END TIM3_IRQn 1 */
 }
 
-
 /**
   * @brief This function handles TIM5 global interrupt.
   */
@@ -281,6 +294,7 @@ void TIM5_IRQHandler(void)
 
   /* USER CODE END TIM5_IRQn 1 */
 }
+
 /**
   * @brief This function handles IPCC RX1 occupied interrupt.
   */

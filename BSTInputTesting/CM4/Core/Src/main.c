@@ -31,8 +31,6 @@
 #include <stdint.h>
 /* USER CODE END Includes */
 
-/* USER CODE END Includes */
-
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 typedef struct {
@@ -52,8 +50,7 @@ VIRT_UART_HandleTypeDef huart0;
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define MAX_BUFFER_SIZE RPMSG_BUFFER_SIZE
-#define MSG_TYPE_BST 1
-#define MSG_TYPE_BST_WITH_STRINGPOT 2
+
 
 #define LOGLEVEL LOGINFO
 #define __LOG_UART_IO_
@@ -63,7 +60,10 @@ VIRT_UART_HandleTypeDef huart0;
 /* USER CODE BEGIN PM */
 
 /* USER CODE END PM */
+
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+
 IPCC_HandleTypeDef hipcc;
 
 TIM_HandleTypeDef htim3;
@@ -104,34 +104,30 @@ uint8_t VirtUart0ChannelBuffRx[MAX_BUFFER_SIZE];
 // Size of the received message
 uint16_t VirtUart0ChannelRxSize = 0;
 
-// Flag to indicate that a message has been transmitted to the A7 core
-__IO FlagStatus VirtUart0TxMsg = RESET;
-// Buffer used for transmission to the A7 core
-uint8_t VirtUart0ChannelBuffTx[MAX_BUFFER_SIZE];
-// Size of the transmission message
-uint16_t VirtUart0ChannelTxSize = 0;
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void PeriphCommonClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_IPCC_Init(void);
+static void MX_ADC1_Init(void);
 int MX_OPENAMP_Init(int RPMsgRole, rpmsg_ns_bind_cb ns_bind_cb);
 /* USER CODE BEGIN PFP */
 // Callback function for the virtual UART reception from the A7 core
 void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart);
-
-// Callback function for the virtual UART transmission to the A7 core
-void VIRT_UART0_TxCpltCallback(VIRT_UART_HandleTypeDef *huart);
 
 // Function to perform the BST test with string potentiometer
 int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2);
 
 // Function to calculate estimated stroke if no string potentiometer is selected
 float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2);
+
+// Function to read stroke from ADC
+float read_stroke_from_adc(void);
 
 /* USER CODE END PFP */
 
@@ -165,6 +161,12 @@ int main(void)
     /* Configure the system clock */
     SystemClock_Config();
   }
+
+  if(IS_ENGINEERING_BOOT_MODE())
+  {
+    /* Configure the peripherals common clocks */
+    PeriphCommonClock_Config();
+  }
   else
   {
     /* IPCC initialisation */
@@ -181,6 +183,7 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM5_Init();
   MX_TIM3_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   // Start Timer 3 Channel 2 for PWM Output 1
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2); // For PWM1 (S1)
@@ -335,6 +338,91 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief Peripherals Common Clock Configuration
+  * @retval None
+  */
+void PeriphCommonClock_Config(void)
+{
+  RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+
+  /** Initializes the common periph clock
+  */
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_CKPER;
+  PeriphClkInit.CkperClockSelection = RCC_CKPERCLKSOURCE_HSE;
+  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+  {
+    Error_Handler();
+  }
+}
+
+/**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_MultiModeTypeDef multimode = {0};
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+
+  /** Common config
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc1.Init.LowPowerAutoWait = DISABLE;
+  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DR;
+  hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+  hadc1.Init.LeftBitShift = ADC_LEFTBITSHIFT_NONE;
+  hadc1.Init.OversamplingMode = DISABLE;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure the ADC multi-mode
+  */
+  multimode.Mode = ADC_MODE_INDEPENDENT;
+  if (HAL_ADCEx_MultiModeConfigChannel(&hadc1, &multimode) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_0;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
+}
+
+/**
   * @brief IPCC Initialization Function
   * @param None
   * @retval None
@@ -469,6 +557,7 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
@@ -510,26 +599,97 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
 // Checking the BST values
 int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
 {
+	// number of test points = 5 (25 / 5)
     int num_points = sizeof(bst_test_points) / sizeof(BSTTestPoint);
 
+    // Check if stroke is less then the first stroke or more than the last stroke (out of range)
+    if (stroke < bst_test_points[0].stroke || stroke > bst_test_points[num_points - 1].stroke)
+    {
+    	return 0; // Stroke out of range
+    }
+
+    // Initialize pointers to find the nearest two test points
+    BSTTestPoint *lower_point = NULL;
+    BSTTestPoint *upper_point = NULL;
+
+    // For loop for the test points where the stroke might lie in between
 	for (int i = 0; i < num_points; i++)
     {
-        if (fabsf(stroke - bst_test_points[i].stroke) < 0.1f)
-        {
-            if (duty_cycle1 >= bst_test_points[i].duty_cycle1_min &&
-                duty_cycle1 <= bst_test_points[i].duty_cycle1_max &&
-                duty_cycle2 >= bst_test_points[i].duty_cycle2_min &&
-                duty_cycle2 <= bst_test_points[i].duty_cycle2_max)
-            {
-                return 1; // Test passed
-            }
-            else
-            {
-                return 0; // Test failed
-            }
-        }
+		if (stroke >= bst_test_points[i].stroke && stroke <= bst_test_points[i + 1].stroke)
+		{
+			lower_point = &bst_test_points[i];
+			upper_point = &bst_test_points[i + 1];
+			break;
+		}
     }
-    return 0; // Test failed if no matching stroke found
+
+	// If stroke matches test point exactly, lower and upper point are set to that test point
+	if (lower_point == NULL || upper_point == NULL)
+	{
+		// If the absolute difference of the stroke and the first test point is less than 0.1
+		if (fabsf(stroke - bst_test_points[0].stroke) < 0.1f)
+		{
+			// Set both the lower and upper point to 0mm test point
+			lower_point = &bst_test_points[0];
+			upper_point = &bst_test_points[0];
+		}
+		// If the absolute difference of the stroke and the test point number is less than 0.1
+		else if (fabsf(stroke - bst_test_points[num_points - 1].stroke) < 0.1f)
+		{
+			// Set both upper and lower point to the same mm test point
+			lower_point = &bst_test_points[num_points - 1];
+			upper_point = &bst_test_points[num_points - 1];
+		}
+		else
+		{
+			return 0; // Stroke not within test point range
+		}
+	}
+
+	// Calculating interpolation ratio to calculate expected duty cycles
+	float ratio = (stroke - lower_point->stroke) / (upper_point->stroke - lower_point->stroke);
+
+	// Getting both pwm channel expected duty cycles with a 3.5% tolerance.
+	// Keeping in mind lower_point and upper_point are pointers to the nearest test points surround measured stroke
+	// Variable ratio will give us fractional position between the two test points
+	// This formula will calculate a value that lies between the lower and upper proportional to the ratio
+	// Starting with minimum or maximum duty cucle at lower test point
+	// Then adding the proportial difference between lower and upper duty cycle min or max, scaled by ratio
+	float expected_duty_cycle1_min = lower_point->duty_cycle1_min + ratio * (upper_point->duty_cycle1_min - lower_point->duty_cycle1_min);
+	float expected_duty_cycle1_max = lower_point->duty_cycle1_max + ratio * (upper_point->duty_cycle1_max - lower_point->duty_cycle1_max);
+	float expected_duty_cycle2_min = lower_point->duty_cycle2_min + ratio * (upper_point->duty_cycle2_min - lower_point->duty_cycle2_min);
+	float expected_duty_cycle2_max = lower_point->duty_cycle2_max + ratio * (upper_point->duty_cycle2_max - lower_point->duty_cycle2_max);
+
+
+	// Allow tolerance of 3.5% according to BST product specs
+	float tolerance = 3.5f;
+
+	// Adjust interpolated ranges by tolerance
+	expected_duty_cycle1_min -= tolerance;
+	expected_duty_cycle1_max += tolerance;
+	expected_duty_cycle2_min -= tolerance;
+	expected_duty_cycle2_max += tolerance;
+
+	// Check if measured duty cycles fit within ranges in either order
+    int case1 = (duty_cycle1 >= expected_duty_cycle1_min &&
+                 duty_cycle1 <= expected_duty_cycle1_max &&
+                 duty_cycle2 >= expected_duty_cycle2_min &&
+                 duty_cycle2 <= expected_duty_cycle2_max);
+
+    int case2 = (duty_cycle1 >= expected_duty_cycle2_min &&
+                 duty_cycle1 <= expected_duty_cycle2_max &&
+                 duty_cycle2 >= expected_duty_cycle1_min &&
+                 duty_cycle2 <= expected_duty_cycle1_max);
+
+    // Check if either case passed to send back a test passed or failed to A7 Cortex
+    if (case1 || case2)
+    {
+    	return 1; // passed
+    }
+    else
+    {
+    	return 0; // failed
+    }
 }
 
 // Estimate stroke from the given duty cycles if no string potentiometer
@@ -572,6 +732,48 @@ float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 	return estimated_stroke;
 }
 
+
+float read_stroke_from_adc(void)
+{
+	// Start ADC conversion
+	HAL_ADC_Start(&hadc1);
+	// Wait for conversion to complete
+	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+	// Get ADC value
+	uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
+	// Stop ADC
+	HAL_ADC_Stop(&hadc1);
+
+	// ADC parameters
+
+	// For 12-bit ADC res
+	uint32_t ADC_max_value = 4095;
+
+	// Reference voltage
+	float V_ref = 3.3f;
+
+	// Maximum Sensor Voltage
+	float V_sensor_max = 10.0f;
+
+	// Maximum Stroke in mm
+	float Stroke_max = 1270.0f;
+
+	// Voltage divider scaling factor
+	float scaling_factor = (8.5f + 3.3f) / 3.3f; //(R1 + R2) / R2
+
+	// Calculating ADC input
+	float V_adc = ((float)adc_value / (float)ADC_max_value) * V_ref;
+
+	// Calculating acutal sensor voltage before voltage divider
+	float V_sensor = V_adc * scaling_factor;
+
+
+    // Calculate stroke in mm
+    float stroke = ((V_sensor - V_sensor_min) / (V_sensor_max - V_sensor_min)) * Stroke_max;
+
+    return stroke;
+
+}
 /* USER CODE END 4 */
 
 /**

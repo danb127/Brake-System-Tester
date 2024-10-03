@@ -1,0 +1,212 @@
+22:49:48 **** Incremental Build of configuration Debug for project MultiInputTesting_CM4 ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DCORE_CM4 -DUSE_HAL_DRIVER -DSTM32MP157Fxx -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -c -I../Core/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Drivers/CMSIS/Include -I../OPENAMP -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/stm32mp1xx_it.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DCORE_CM4 -DUSE_HAL_DRIVER -DSTM32MP157Fxx -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -c -I../Core/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Drivers/CMSIS/Include -I../OPENAMP -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32mp1xx_it.d" -MT"Core/Src/stm32mp1xx_it.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32mp1xx_it.o"
+../Core/Src/main.c:107:36: error: unknown type name 'rpmsg_ns_bind_cb'
+  107 | int MX_OPENAMP_Init(int RPMsgRole, rpmsg_ns_bind_cb ns_bind_cb);
+      |                                    ^~~~~~~~~~~~~~~~
+../Core/Src/main.c:118:1: error: unknown type name 'bool'
+  118 | bool check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
+      | ^~~~
+../Core/Src/main.c:25:1: note: 'bool' is defined in header '<stdbool.h>'; did you forget to '#include <stdbool.h>'?
+   24 | #include <string.h>
+  +++ |+#include <stdbool.h>
+   25 | 
+../Core/Src/stm32mp1xx_it.c: In function 'Debug_Print':
+../Core/Src/stm32mp1xx_it.c:381:9: warning: implicit declaration of function 'HAL_UART_Transmit' [-Wimplicit-function-declaration]
+  381 |         HAL_UART_Transmit(&huart3, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+      |         ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'check_bst_values':
+../Core/Src/main.c:124:61: error: expected ')' before '{' token
+  124 |         if (fabsf(stroke - bst_test_points[i].stroke < 0.1f)
+      |            ~                                                ^
+      |                                                             )
+  125 |         {
+      |         ~                                                    
+../Core/Src/main.c:140:1: error: expected expression before '}' token
+  140 | }
+      | ^
+../Core/Src/main.c: In function 'process_request':
+../Core/Src/main.c:147:22: error: 'hadc1' undeclared (first use in this function)
+  147 |     HAL_ADC_Stop_IT(&hadc1);
+      |                      ^~~~~
+../Core/Src/main.c:147:22: note: each undeclared identifier is reported only once for each function it appears in
+../Core/Src/stm32mp1xx_it.c:381:28: error: 'huart3' undeclared (first use in this function)
+  381 |         HAL_UART_Transmit(&huart3, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+      |                            ^~~~~~
+../Core/Src/stm32mp1xx_it.c:381:28: note: each undeclared identifier is reported only once for each function it appears in
+../Core/Src/stm32mp1xx_it.c: At top level:
+../Core/Src/stm32mp1xx_it.c:364:14: warning: 'Wear_Calc' defined but not used [-Wunused-function]
+  364 | static float Wear_Calc(uint32_t adc2_value)
+      |              ^~~~~~~~~
+make: *** [Core/Src/subdir.mk:31: Core/Src/stm32mp1xx_it.o] Error 1
+make: *** Waiting for unfinished jobs....
+../Core/Src/main.c:163:14: error: 'MSG_TYPE_PRESSURE_SENSOR' undeclared (first use in this function)
+  163 |         case MSG_TYPE_PRESSURE_SENSOR:
+      |              ^~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:167:14: error: 'MSG_TYPE_WEAR_SENSOR' undeclared (first use in this function)
+  167 |         case MSG_TYPE_WEAR_SENSOR:
+      |              ^~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:171:14: error: 'MSG_TYPE_ESCM' undeclared (first use in this function); did you mean 'MSG_TYPE_BST'?
+  171 |         case MSG_TYPE_ESCM:
+      |              ^~~~~~~~~~~~~
+      |              MSG_TYPE_BST
+../Core/Src/main.c: In function 'send_data_to_a7':
+../Core/Src/main.c:190:5: warning: implicit declaration of function 'OPENAMP_send' [-Wimplicit-function-declaration]
+  190 |     OPENAMP_send(&rpmsg_channel, (uint32_t*) data, sizeof(BSTData));
+      |     ^~~~~~~~~~~~
+../Core/Src/main.c:190:19: error: 'rpmsg_channel' undeclared (first use in this function)
+  190 |     OPENAMP_send(&rpmsg_channel, (uint32_t*) data, sizeof(BSTData));
+      |                   ^~~~~~~~~~~~~
+../Core/Src/main.c: In function 'check_bst_values':
+../Core/Src/main.c:198:5: warning: 'main' is normally a non-static function [-Wmain]
+  198 | int main(void)
+      |     ^~~~
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:224:5: warning: implicit declaration of function 'MX_OPENAMP_Init' [-Wimplicit-function-declaration]
+  224 |     MX_OPENAMP_Init(RPMSG_REMOTE, NULL);
+      |     ^~~~~~~~~~~~~~~
+../Core/Src/main.c:224:21: error: 'RPMSG_REMOTE' undeclared (first use in this function)
+  224 |     MX_OPENAMP_Init(RPMSG_REMOTE, NULL);
+      |                     ^~~~~~~~~~~~
+../Core/Src/main.c:246:5: warning: implicit declaration of function 'OPENAMP_check_for_message' [-Wimplicit-function-declaration]
+  246 |     OPENAMP_check_for_message();
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:249:9: error: 'bst_active' undeclared (first use in this function)
+  249 |     if (bst_active || bst_with_stringpot_active)
+      |         ^~~~~~~~~~
+../Core/Src/main.c:249:23: error: 'bst_with_stringpot_active' undeclared (first use in this function)
+  249 |     if (bst_active || bst_with_stringpot_active)
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:266:9: error: unknown type name 'bool'
+  266 |         bool bst_passed = false;
+      |         ^~~~
+../Core/Src/main.c:266:9: note: 'bool' is defined in header '<stdbool.h>'; did you forget to '#include <stdbool.h>'?
+../Core/Src/main.c:266:27: error: 'false' undeclared (first use in this function)
+  266 |         bool bst_passed = false;
+      |                           ^~~~~
+../Core/Src/main.c:266:27: note: 'false' is defined in header '<stdbool.h>'; did you forget to '#include <stdbool.h>'?
+../Core/Src/main.c:270:64: error: 'hadc1' undeclared (first use in this function)
+  270 |             float stringpot_voltage = (float)HAL_ADC_GetValue(&hadc1) * (3.3f / 4095.0f);
+      |                                                                ^~~~~
+../Core/Src/main.c:274:22: error: 'BSTData' has no member named 'bst_passed'; did you mean 'test_passed'?
+  274 |             bst_data.bst_passed = check_bst_values(stroke, duty_cycle1, duty_cycle2);
+      |                      ^~~~~~~~~~
+      |                      test_passed
+../Core/Src/main.c:279:22: error: 'BSTData' has no member named 'bst_passed'; did you mean 'test_passed'?
+  279 |             bst_data.bst_passed = check_bst_values(stroke, duty_cycle1, duty_cycle2);
+      |                      ^~~~~~~~~~
+      |                      test_passed
+../Core/Src/main.c:266:14: warning: unused variable 'bst_passed' [-Wunused-variable]
+  266 |         bool bst_passed = false;
+      |              ^~~~~~~~~~
+../Core/Src/main.c:291:25: error: 'latest_pressure' undeclared (first use in this function)
+  291 |         float voltage = latest_pressure.voltage;
+      |                         ^~~~~~~~~~~~~~~
+../Core/Src/main.c:297:19: warning: unused variable 'pressure_psi' [-Wunused-variable]
+  297 |             float pressure_psi = latest_pressure.psi;
+      |                   ^~~~~~~~~~~~
+../Core/Src/main.c:294:19: warning: unused variable 'pressure_bar' [-Wunused-variable]
+  294 |             float pressure_bar = latest_pressure.bar;
+      |                   ^~~~~~~~~~~~
+../Core/Src/main.c:291:15: warning: unused variable 'voltage' [-Wunused-variable]
+  291 |         float voltage = latest_pressure.voltage;
+      |               ^~~~~~~
+../Core/Src/main.c:202:38: warning: unused variable 'pressure_psi' [-Wunused-variable]
+  202 |         float voltage, pressure_bar, pressure_psi;
+      |                                      ^~~~~~~~~~~~
+../Core/Src/main.c:202:24: warning: unused variable 'pressure_bar' [-Wunused-variable]
+  202 |         float voltage, pressure_bar, pressure_psi;
+      |                        ^~~~~~~~~~~~
+../Core/Src/main.c:202:15: warning: unused variable 'voltage' [-Wunused-variable]
+  202 |         float voltage, pressure_bar, pressure_psi;
+      |               ^~~~~~~
+../Core/Src/main.c: In function 'check_bst_values':
+../Core/Src/main.c:382:13: error: invalid storage class for function 'MX_ADC1_Init'
+  382 | static void MX_ADC1_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c: In function 'MX_ADC1_Init':
+../Core/Src/main.c:398:3: error: 'hadc1' undeclared (first use in this function)
+  398 |   hadc1.Instance = ADC1;
+      |   ^~~~~
+../Core/Src/main.c: In function 'check_bst_values':
+../Core/Src/main.c:453:13: error: invalid storage class for function 'MX_FDCAN1_Init'
+  453 | static void MX_FDCAN1_Init(void)
+      |             ^~~~~~~~~~~~~~
+../Core/Src/main.c: In function 'MX_FDCAN1_Init':
+../Core/Src/main.c:463:3: error: 'hfdcan1' undeclared (first use in this function)
+  463 |   hfdcan1.Instance = FDCAN1;
+      |   ^~~~~~~
+../Core/Src/main.c: In function 'check_bst_values':
+../Core/Src/main.c:506:13: error: invalid storage class for function 'MX_IPCC_Init'
+  506 | static void MX_IPCC_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:532:13: error: invalid storage class for function 'MX_TIM3_Init'
+  532 | static void MX_TIM3_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:580:13: error: invalid storage class for function 'MX_TIM5_Init'
+  580 | static void MX_TIM5_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:628:13: error: invalid storage class for function 'MX_GPIO_Init'
+  628 | static void MX_GPIO_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:661:1: error: expected declaration or statement at end of input
+  661 | }
+      | ^
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:101:13: warning: 'MX_GPIO_Init' used but never defined
+  101 | static void MX_GPIO_Init(void);
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:102:13: warning: 'MX_TIM5_Init' used but never defined
+  102 | static void MX_TIM5_Init(void);
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:103:13: warning: 'MX_ADC1_Init' used but never defined
+  103 | static void MX_ADC1_Init(void);
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:104:13: warning: 'MX_TIM3_Init' used but never defined
+  104 | static void MX_TIM3_Init(void);
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:105:13: warning: 'MX_FDCAN1_Init' used but never defined
+  105 | static void MX_FDCAN1_Init(void);
+      |             ^~~~~~~~~~~~~~
+../Core/Src/main.c:106:13: warning: 'MX_IPCC_Init' used but never defined
+  106 | static void MX_IPCC_Init(void);
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c: In function 'check_bst_values':
+../Core/Src/main.c:680: warning: control reaches end of non-void function [-Wreturn-type]
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:652:6: warning: 'Error_Handler' defined but not used [-Wunused-function]
+  652 | void Error_Handler(void)
+      |      ^~~~~~~~~~~~~
+../Core/Src/main.c:628:13: warning: 'MX_GPIO_Init' defined but not used [-Wunused-function]
+  628 | static void MX_GPIO_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:580:13: warning: 'MX_TIM5_Init' defined but not used [-Wunused-function]
+  580 | static void MX_TIM5_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:532:13: warning: 'MX_TIM3_Init' defined but not used [-Wunused-function]
+  532 | static void MX_TIM3_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:506:13: warning: 'MX_IPCC_Init' defined but not used [-Wunused-function]
+  506 | static void MX_IPCC_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:453:13: warning: 'MX_FDCAN1_Init' defined but not used [-Wunused-function]
+  453 | static void MX_FDCAN1_Init(void)
+      |             ^~~~~~~~~~~~~~
+../Core/Src/main.c:382:13: warning: 'MX_ADC1_Init' defined but not used [-Wunused-function]
+  382 | static void MX_ADC1_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:313:6: warning: 'SystemClock_Config' defined but not used [-Wunused-function]
+  313 | void SystemClock_Config(void)
+      |      ^~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:198:5: warning: 'main' defined but not used [-Wunused-function]
+  198 | int main(void)
+      |     ^~~~
+../Core/Src/main.c:180:6: warning: 'OPENAMP_MPU_RemoteHandler' defined but not used [-Wunused-function]
+  180 | void OPENAMP_MPU_RemoteHandler(uint32_t *msg)
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+make: *** [Core/Src/subdir.mk:31: Core/Src/main.o] Error 1
+"make -j8 all" terminated with exit code 2. Build might be incomplete.
+
+22:49:49 Build Failed. 31 errors, 30 warnings. (took 985ms)
+
