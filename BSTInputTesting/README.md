@@ -193,7 +193,7 @@ ls tmp/deploy/images/stm32mp15-disco
 ```
 
 ## Boot Process and SD Card
-[[ZF Internship - STM32 MPU Boot Chain Overview]]
+
 ### CubeMX
 Can use git to look into project by installing this repository in your directory
 ```zsh
