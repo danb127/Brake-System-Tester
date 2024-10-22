@@ -86,7 +86,6 @@ volatile float frequency1 = 0;
 volatile float frequency2 = 0;
 volatile float stroke = 0;
 
-uint8_t bst_active = 0;
 uint8_t use_stringpot = 0;
 
 // 0 mm stroke, 12.5% +- 3.5% and 87.5% +-3.5 %
@@ -569,15 +568,20 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
 		response = "BST Test Acknowledged\n";
     strcpy(response_buffer,response);
 	}
+  // start test once string potentiometer is used or not
 	else if(strncmp(server_message,"no\n",server_message_len) == 0)
 	{
 		response = "Testing with no String Potentiometer\n";
     strcpy(response_buffer,response);
+    start = 1;
 	}
   else if(strncmp(server_message,"yes\n",server_message_len) == 0)
   {
     response = "Testing with String Potentiometer\n";
     strcpy(response_buffer,response_buffer);
+    // set use_stringpot
+    use_stringpot = 1;
+    start = 1;
   }
   else if(strncmp(server_message,"ping\n",server_message_len) == 0)
   {
