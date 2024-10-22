@@ -101,7 +101,8 @@ extern char system_log_buf[SYSTEM_TRACE_BUF_SZ]; /*!< buffer for debug traces */
 #define log_err(fmt, ...)
 #endif
 #else
-#define log_dbg(fmt, ...)
+// log wrapper around printf to include time
+#define log_dbg(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
 #define log_info(fmt, ...)
 #define log_warn(fmt, ...)
 #define log_err(fmt, ...)
