@@ -70,6 +70,12 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim5;
 
 /* USER CODE BEGIN PV */
+
+// start should be set once communication with server is established
+static uint8_t start = 0;
+// complete should be set once test produces pass/fail
+static uint8_t complete = 0;
+
 volatile float pulse_width1 = 0;
 volatile float pulse_width2 = 0;
 volatile float period1 = 0;
