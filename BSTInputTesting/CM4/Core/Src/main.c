@@ -201,12 +201,6 @@ int main(void)
     * Create Virtual UART device
     * defined by a rpmsg channel attached to the remote device
     */
-   log_info("Virtual UART0 OpenAMP-rpmsg channel creation\r\n");
-   if (VIRT_UART_Init(&huart0) != VIRT_UART_OK) {
-     log_err("VIRT_UART_Init UART0 failed.\r\n");
-     Error_Handler();
-   }
-
    /*Need to register callback for message reception by channels*/
    if(VIRT_UART_RegisterCallback(&huart0, VIRT_UART_RXCPLT_CB_ID, VIRT_UART0_RxCpltCallback) != VIRT_UART_OK)
    {
@@ -221,51 +215,55 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  OPENAMP_check_for_message();
-
-	  if (VirtUart0RxMsg) {
-		  VirtUart0RxMsg = RESET;
-		  VIRT_UART_Transmit(&huart0, VirtUart0ChannelBuffRx, VirtUart0ChannelRxSize);
-	  }
-
-	    // Calculating the frequency and duty cycle for both channels
-	    frequency1 = (period1 > 0) ? (((float) SystemCoreClock) / ((htim3.Init.Prescaler + 1) * period1)) : 0;
-	    frequency2 = (period2 > 0) ? (((float) SystemCoreClock) / ((htim5.Init.Prescaler + 1) * period2)) : 0;
-
-	    duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
-	    duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
-
-	    if (use_stringpot)
-	    {
-	    	// Using String Potentiometer
-
-	    	// Read the stroke value from ADC
-	    	stroke = read_stroke_from_adc();
-
-	    	// Check if the duty cycles are acceptable for the measured stroke
-	    	int test_passed = check_bst_values(stroke, duty_cycle1, duty_cycle2);
-
-	    	if (test_passed)
-	    	{
-	    		// Test Passed
-	    		log_info("BST Test Passed for Stroke: %2f mm\n Duty Cycles were: %.2f and %.2f\n", stroke, duty_cycle1, duty_cycle2);
-	    	}
-	    	else
-	    	{
-	    		// Test Failed
-	    		log_info("BST Test Failed for Stroke: %.2f mm\n Duty Cycles were: %.2f and %.2f\n", stroke, duty_cycle1, duty_cycle2);
-	    	}
-	    }
-	    // If string potentiometer is not being used
-	    else
-	    {
-	    	// Not Using String Potentiometer
+      OPENAMP_check_for_message();
 
 
-	    	float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
+    if(start) 
+    {
+      // Calculating the frequency and duty cycle for both channels
+      frequency1 = (period1 > 0) ? (((float) SystemCoreClock) / ((htim3.Init.Prescaler + 1) * period1)) : 0;
+      frequency2 = (period2 > 0) ? (((float) SystemCoreClock) / ((htim5.Init.Prescaler + 1) * period2)) : 0;
 
-	    	log_info("Estimated Stroke is: %.2f mm\n Duty Cycles were: %.2f and %.2f", estimated_stroke, duty_cycle1, duty_cycle2);
-	    }
+      duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
+      duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
+
+      if (use_stringpot)
+      {
+        // Using String Potentiometer
+
+        // Read the stroke value from ADC
+        stroke = read_stroke_from_adc();
+
+        // Check if the duty cycles are acceptable for the measured stroke
+        int test_passed = check_bst_values(stroke, duty_cycle1, duty_cycle2);
+
+        if (test_passed)
+        {
+          // Test Passed
+          log_info("BST Test Passed for Stroke: %2f mm\n Duty Cycles were: %.2f and %.2f\n", stroke, duty_cycle1, duty_cycle2);
+        }
+        else
+        {
+          // Test Failed
+          log_info("BST Test Failed for Stroke: %.2f mm\n Duty Cycles were: %.2f and %.2f\n", stroke, duty_cycle1, duty_cycle2);
+        }
+      }
+      // If string potentiometer is not being used
+      else
+      {
+        // Not Using String Potentiometer
+
+
+        float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
+
+        log_info("Estimated Stroke is: %.2f mm\n Duty Cycles were: %.2f and %.2f", estimated_stroke, duty_cycle1, duty_cycle2);
+      }
+    }
+
+    if (VirtUart0RxMsg) {
+      VirtUart0RxMsg = RESET;
+      VIRT_UART_Transmit(&huart0, VirtUart0ChannelBuffRx, VirtUart0ChannelRxSize);
+    }
 
 
     /* USER CODE END WHILE */
