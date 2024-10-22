@@ -207,6 +207,8 @@ int main(void)
    }
 
 
+  //csv header
+  printf("time(s),duty_cycle1(%),duty_cycle2(%),stroke(mm)\r\n");
 
   /* USER CODE END 2 */
 
@@ -226,12 +228,15 @@ int main(void)
       duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
       duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
 
+
       if (use_stringpot)
       {
         // Using String Potentiometer
 
         // Read the stroke value from ADC
         stroke = read_stroke_from_adc();
+        // duty_cycle1,duty_cycle2,stroke
+        log_info("%f,%f,%f\r\n",duty_cycle1,duty_cycle2,stroke);
 
         // Check if the duty cycles are acceptable for the measured stroke
         result = check_bst_values(stroke, duty_cycle1, duty_cycle2);
@@ -243,6 +248,8 @@ int main(void)
       {
         // Not Using String Potentiometer
         float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
+        // duty_cycle1,duty_cycle2,estimated_stroke
+        log_info("%f,%f,%f\r\n",duty_cycle1,duty_cycle2,estimated_stroke);
       }
     }
 
