@@ -235,7 +235,7 @@ int main(void)
         stroke = read_stroke_from_adc();
 
         // Check if the duty cycles are acceptable for the measured stroke
-        int test_passed = check_bst_values(stroke, duty_cycle1, duty_cycle2);
+        complete = check_bst_values(stroke, duty_cycle1, duty_cycle2);
 
         if (test_passed)
         {
@@ -248,6 +248,7 @@ int main(void)
           log_info("BST Test Failed for Stroke: %.2f mm\n Duty Cycles were: %.2f and %.2f\n", stroke, duty_cycle1, duty_cycle2);
         }
       }
+      // TODO: Implement test condition for No String potentiometer case
       // If string potentiometer is not being used
       else
       {
