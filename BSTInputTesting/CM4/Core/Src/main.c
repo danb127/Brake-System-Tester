@@ -216,7 +216,7 @@ int main(void)
 
 
   //csv header
-  printf("time(s),duty_cycle1(%),duty_cycle2(%),stroke(mm)\r\n");
+  printf("time(s),duty_cycle1(%%),duty_cycle2(%%),stroke(mm)\r\n");
 
   /* USER CODE END 2 */
 
@@ -623,24 +623,24 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
 {
 
 	const char* server_message = (char*) huart->pRxBuffPtr;
-  const size_t server_message_len = huart->RxXfersize;
-	char* response_buffer[64] = "ERROR\n";
+  const size_t server_message_len = huart->RxXferSize;
+	char response_buffer[64] = "ERROR\n";
 
 	if (strncmp(server_message,"hello\n",server_message_len) == 0)
 	{
-		response = "BST Test Acknowledged\n";
+		char response[] = "BST Test Acknowledged\n";
     strcpy(response_buffer,response);
 	}
   // start test once string potentiometer is used or not
 	else if(strncmp(server_message,"no\n",server_message_len) == 0)
 	{
-		response = "Testing with no String Potentiometer\n";
+		char response[] = "Testing with no String Potentiometer\n";
     strcpy(response_buffer,response);
     start = 1;
 	}
   else if(strncmp(server_message,"yes\n",server_message_len) == 0)
   {
-    response = "Testing with String Potentiometer\n";
+    char response[] = "Testing with String Potentiometer\n";
     strcpy(response_buffer,response_buffer);
     // set use_stringpot
     use_stringpot = 1;
