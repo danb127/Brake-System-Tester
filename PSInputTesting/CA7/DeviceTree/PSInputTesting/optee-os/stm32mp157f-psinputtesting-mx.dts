@@ -132,7 +132,6 @@
 	st,clksrc = <
 		CLK_CKPER_DISABLED
 		CLK_STGEN_HSI
-		CLK_ADC_PLL4R
 		CLK_MPU_HSI
 		CLK_AXI_HSI
 		CLK_MCU_PLL3P
@@ -159,8 +158,8 @@
 			divmn = < 3 27 >;
 			frac = < 0x400 >;
 		};
-		pll4_vco_400Mhz: pll4-vco-400Mhz {
-			src = < CLK_PLL4_HSI >;
+		pll4_vco_96000000Mhz: pll4-vco-96000000Mhz {
+			src = < 0 >;
 			divmn = < 3 24 >;
 		};
 		/* USER CODE BEGIN rcc_st-pll_vco */
@@ -188,7 +187,7 @@
 		st,pll = < &pll4_cfg1 >;
 
 		pll4_cfg1: pll4_cfg1 {
-			st,pll_vco = < &pll4_vco_400Mhz >;
+			st,pll_vco = < &pll4_vco_96000000Mhz >;
 			st,pll_div_pqr = < 1 1 3 >;
 		};
 		/* USER CODE BEGIN pll4 */

@@ -6,8 +6,10 @@
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
-		<item key="selection" value=""/>
+		<item key="selection" value="ADC_SAMPLE"/>
 		<list key="findhistory">
+			<item value="ADC_SAMPLE"/>
+			<item value="ADC_"/>
 			<item value="VIRT"/>
 			<item value="Wear"/>
 		</list>

@@ -52,7 +52,9 @@ ADC_HandleTypeDef hadc1;
 IPCC_HandleTypeDef hipcc;
 
 /* USER CODE BEGIN PV */
+int cws_test_active = 0;
 
+float wear = 0.0f;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -135,7 +137,7 @@ int main(void)
 	    }
 
 	    if (cws_test_active) {
-	      float wear = read_cws_from_adc();
+	      wear = read_cws_from_adc();
 
 	      // Send raw wear value to A7 core
 	      char wear_str[20];
@@ -379,7 +381,7 @@ float read_cws_from_adc(void)
   float V_sensor = V_adc * divider_factor;
 
   // Calculate wear in mm
-  float wear = ((V_sensor - V_sensor_min) / (V_sensor_max - V_sensor_min)) * Wear_max;
+  wear = ((V_sensor - V_sensor_min) / (V_sensor_max - V_sensor_min)) * Wear_max;
 
   return wear;
 }

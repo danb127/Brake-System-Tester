@@ -15,11 +15,4 @@
 		<nature>com.st.stm32cube.ide.mcu.MCUSingleCpuProjectNature</nature>
 		<nature>com.st.stm32cube.ide.mpu.MPUEmbeddedMCUProjectNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>DeviceTree</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/MultiInputTesting/CA7/DeviceTree</locationURI>
-		</link>
-	</linkedResources>
 </projectDescription>

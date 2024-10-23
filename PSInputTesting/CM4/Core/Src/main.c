@@ -19,13 +19,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "openamp.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include "virt_uart.h"
 #include <string.h>
 #include <stdio.h>
 #include "openamp_log.h"
 #include <float.h>
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,12 +53,19 @@ IPCC_HandleTypeDef hipcc;
 
 /* USER CODE BEGIN PV */
 
+// Virtual UART handle for RPMsg communication with the remote core
+VIRT_UART_HandleTypeDef huart0;
+
 /* Flags and Buffers for RPMSG communication */
 __IO FlagStatus VirtUart0RxMsg = RESET;
 uint8_t VirtUart0ChannelBuffRx[MAX_BUFFER_SIZE];
 uint16_t VirtUart0ChannelRxSize = 0;
 
 volatile uint8_t pressure_test_active = 0;
+volatile float pressure = 0;
+volatile float V_adc = 0;
+uint32_t adc_value = 0;
+volatile float pressure_psi = 0;
 
 /* USER CODE END PV */
 
@@ -122,6 +130,18 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
+  // Enable ADC calibration
+  if (HAL_ADCEx_Calibration_Start(&hadc1, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED) != HAL_OK)
+  {
+      Error_Handler();
+  }
+
+  // Start ADC
+  if (HAL_ADC_Start(&hadc1) != HAL_OK)
+  {
+      Error_Handler();
+  }
+
   /*
     * Create Virtual UART device
     * defined by a rpmsg channel attached to the remote device
@@ -144,20 +164,25 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  OPENAMP_check_for_message();
+	  //OPENAMP_check_for_message();
 
-	  if (VirtUart0RxMsg) {
-	  		  VirtUart0RxMsg = RESET;
-	  		  VIRT_UART_Transmit(&huart0, VirtUart0ChannelBuffRx, VirtUart0ChannelRxSize);
-	  }
+	  //if (VirtUart0RxMsg) {
+	  	//	  VirtUart0RxMsg = RESET;
+	  		//  VIRT_UART_Transmit(&huart0, VirtUart0ChannelBuffRx, VirtUart0ChannelRxSize);
+	  //}
 
-	  if (pressure_test_active) {
-	        float pressure = read_pressure_from_adc();
+	  //if (pressure_test_active) {
+	        pressure = read_pressure_from_adc();
 
 	        // Send raw pressure value to A7 core
-	        char pressure_str[20];
-	        VIRT_UART_Transmit(&huart0, (uint8_t*)pressure_str, strlen(pressure_str));
-	      }
+	        // Format string with all debug values
+	            char pressure_str[100];
+	            //snprintf(pressure_str, sizeof(pressure_str),
+	               //      "ADC:%lu V:%.3f P:%.1f PSI\r\n",
+	                //    adc_value, V_adc, pressure_psi);
+	            VIRT_UART_Transmit(&huart0, (uint8_t*)pressure_str, strlen(pressure_str));
+
+	    //  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -193,16 +218,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL3.PLLRGE = RCC_PLL3IFRANGE_1;
   RCC_OscInitStruct.PLL3.PLLFRACV = 1024;
   RCC_OscInitStruct.PLL3.PLLMODE = RCC_PLL_FRACTIONAL;
-  RCC_OscInitStruct.PLL4.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL4.PLLSource = RCC_PLL4SOURCE_HSI;
-  RCC_OscInitStruct.PLL4.PLLM = 4;
-  RCC_OscInitStruct.PLL4.PLLN = 25;
-  RCC_OscInitStruct.PLL4.PLLP = 2;
-  RCC_OscInitStruct.PLL4.PLLQ = 2;
-  RCC_OscInitStruct.PLL4.PLLR = 4;
-  RCC_OscInitStruct.PLL4.PLLRGE = RCC_PLL4IFRANGE_1;
-  RCC_OscInitStruct.PLL4.PLLFRACV = 0;
-  RCC_OscInitStruct.PLL4.PLLMODE = RCC_PLL_INTEGER;
+  RCC_OscInitStruct.PLL4.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -256,12 +272,12 @@ static void MX_ADC1_Init(void)
   /** Common config
   */
   hadc1.Instance = ADC1;
-  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
   hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
   hadc1.Init.LowPowerAutoWait = DISABLE;
-  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
   hadc1.Init.NbrOfConversion = 1;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
@@ -269,7 +285,11 @@ static void MX_ADC1_Init(void)
   hadc1.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DR;
   hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
   hadc1.Init.LeftBitShift = ADC_LEFTBITSHIFT_NONE;
-  hadc1.Init.OversamplingMode = DISABLE;
+  hadc1.Init.OversamplingMode = ENABLE;
+  hadc1.Init.Oversampling.Ratio = 16;
+  hadc1.Init.Oversampling.RightBitShift = ADC_RIGHTBITSHIFT_4;
+  hadc1.Init.Oversampling.TriggeredMode = ADC_TRIGGEREDMODE_SINGLE_TRIGGER;
+  hadc1.Init.Oversampling.OversamplingStopReset = ADC_REGOVERSAMPLING_CONTINUED_MODE;
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
@@ -287,7 +307,7 @@ static void MX_ADC1_Init(void)
   */
   sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = ADC_REGULAR_RANK_1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  sConfig.SamplingTime = ADC_SAMPLETIME_16CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
   sConfig.OffsetNumber = ADC_OFFSET_NONE;
   sConfig.Offset = 0;
@@ -371,45 +391,66 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
 
 float read_pressure_from_adc(void)
 {
-	// Start ADC conversion
-	HAL_ADC_Start(&hadc1);
-	// Wait for conversion to complete
-	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-	// Get ADC value
-	uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
-	// Stop ADC
-	HAL_ADC_Stop(&hadc1);
 
-	// ADC parameters
-	// For 12-bit ADC res
-	uint32_t ADC_max_value = 4095;
-	// Reference voltage
-	float V_ref = 3.3f;
+	uint32_t sum = 0;
+	const int NUM_SAMPLES = 16; // Match over sampling ratio
 
-	// Sensor Voltage Range
-	float V_sensor_min = 0.5f;
-	float V_sensor_max = 4.5f;
+	for (int i = 0; i < NUM_SAMPLES; i++)
+	{
+		// Start a new conversion
+		HAL_ADC_Start(&hadc1);
 
-	// Voltage divider factor
-	float divider_factor = (8.5f + 3.3f) / 3.3f; //(R1 + R2) / R2
+		// Wait for conversion (with timeout)
+		if (HAL_ADC_PollForConversion(&hadc1, 100) != HAL_OK)
+		{
+			Error_Handler();
+			return 0.0f;
+		}
 
-	// Maximum Pressure
-	float Bar_max = 10.0f;
+		// Add up adc value for 16 samples ADC value
+		sum += HAL_ADC_GetValue(&hadc1);
 
-	// Calculating ADC input
-	float V_adc = ((float)adc_value / (float)ADC_max_value) * V_ref;
+		// Delay between samples
+		HAL_Delay(1);
+	}
 
-	// Calculate the actual sensor voltage
-	float V_sensor = V_adc * divider_factor;
+	// Average the readings
+	adc_value = sum / NUM_SAMPLES;
 
-	// Calculate pressure in bar
-	float pressure_bar = ((V_sensor - V_sensor_min) / (V_sensor_max - V_sensor_min)) * Bar_max;
+    // Stop current conversion
+    HAL_ADC_Stop(&hadc1);
 
-	// Pressure in PSI
-	float pressure_psi = pressure_bar * 14.5038f;
+    // ADC parameters
+    uint32_t ADC_max_value = 4095;
+    float V_ref = 3.3f;
 
-	return pressure_psi; // or pressure_bar
+    // Sensor Voltage Range (from ZF pressure sensor specs)
+    float V_sensor_min = 0.5f;
+    float V_sensor_max = 4.5f;
 
+    // Voltage divider factor (3kΩ + 3kΩ voltage divider)
+    float divider_factor = 2.0f; // (3.0 + 3.0) / 3.0
+
+    // Maximum Pressure (10 bar per specs)
+    float Bar_max = 10.0f;
+
+    // Calculate voltages
+    V_adc = ((float)adc_value / (float)ADC_max_value) * V_ref;
+    float V_sensor = V_adc * divider_factor;
+
+    // Calculate pressure in bar with bounds checking
+    float pressure_bar;
+    if (V_sensor < V_sensor_min)
+        pressure_bar = 0.0f;
+    else if (V_sensor > V_sensor_max)
+        pressure_bar = Bar_max;
+    else
+        pressure_bar = ((V_sensor - V_sensor_min) / (V_sensor_max - V_sensor_min)) * Bar_max;
+
+    // Convert to PSI (1 bar = 14.5038 PSI)
+    pressure_psi = pressure_bar * 14.5038f;
+
+    return pressure_psi;
 }
 /* USER CODE END 4 */
 
