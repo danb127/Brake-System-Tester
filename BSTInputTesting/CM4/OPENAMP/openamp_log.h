@@ -49,8 +49,9 @@
   * @{
   */
 #if defined (__LOG_TRACE_IO_)
-#define SYSTEM_TRACE_BUF_SZ 2048
+#define SYSTEM_TRACE_BUF_SZ 124000
 #endif
+#define SYSTEM_TRACE_BUF_SZ 124000
 
 #define LOGQUIET 0
 #define	LOGERR	  1
@@ -86,7 +87,7 @@ extern char system_log_buf[SYSTEM_TRACE_BUF_SZ]; /*!< buffer for debug traces */
 #define log_dbg(fmt, ...)
 #endif
 #if LOGLEVEL >= LOGINFO
-#define log_info(fmt, ...) printf("[%05ld.%03ld][INFO ]" fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
+#define log_dbg(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
 #else
 #define log_info(fmt, ...)
 #endif
@@ -101,7 +102,8 @@ extern char system_log_buf[SYSTEM_TRACE_BUF_SZ]; /*!< buffer for debug traces */
 #define log_err(fmt, ...)
 #endif
 #else
-#define log_dbg(fmt, ...)
+// log wrapper around printf to include time
+#define log_dbg(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
 #define log_info(fmt, ...)
 #define log_warn(fmt, ...)
 #define log_err(fmt, ...)

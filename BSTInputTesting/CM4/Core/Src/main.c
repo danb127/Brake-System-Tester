@@ -70,8 +70,14 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim5;
 
 /* USER CODE BEGIN PV */
+
 // Virtual UART handle for RPMsg communication with the remote core
 VIRT_UART_HandleTypeDef huart0;
+
+// start should be set once communication with server is established
+static uint8_t start = 0;
+// result: default at 0, -1 if fail, 1 if pass
+static int8_t result = 0;
 
 
 volatile float pulse_width1 = 0;
@@ -88,7 +94,6 @@ int case1 = 0;
 int case2 = 0;
 int test_passed = 0;
 
-uint8_t bst_active = 0;
 uint8_t use_stringpot = 0;
 
 // 0 mm stroke, 12.5% +- 3.5% and 87.5% +-3.5 %
@@ -203,12 +208,6 @@ int main(void)
     * Create Virtual UART device
     * defined by a rpmsg channel attached to the remote device
     */
-   log_info("Virtual UART0 OpenAMP-rpmsg channel creation\r\n");
-   if (VIRT_UART_Init(&huart0) != VIRT_UART_OK) {
-     log_err("VIRT_UART_Init UART0 failed.\r\n");
-     Error_Handler();
-   }
-
    /*Need to register callback for message reception by channels*/
    if(VIRT_UART_RegisterCallback(&huart0, VIRT_UART_RXCPLT_CB_ID, VIRT_UART0_RxCpltCallback) != VIRT_UART_OK)
    {
@@ -216,6 +215,8 @@ int main(void)
    }
 
 
+  //csv header
+  printf("time(s),duty_cycle1(%),duty_cycle2(%),stroke(mm)\r\n");
 
   /* USER CODE END 2 */
 
@@ -270,6 +271,48 @@ int main(void)
 	    	test_passed = check_bst_values(estimated_stroke, duty_cycle1, duty_cycle2);
 	    	log_info("Estimated Stroke is: %.2f mm\n Duty Cycles were: %.2f and %.2f", estimated_stroke, duty_cycle1, duty_cycle2);
 	    }
+
+        OPENAMP_check_for_message();
+
+
+    if(start) 
+    {
+      // Calculating the frequency and duty cycle for both channels
+      frequency1 = (period1 > 0) ? (((float) SystemCoreClock) / ((htim3.Init.Prescaler + 1) * period1)) : 0;
+      frequency2 = (period2 > 0) ? (((float) SystemCoreClock) / ((htim5.Init.Prescaler + 1) * period2)) : 0;
+
+      duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
+      duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
+
+
+      if (use_stringpot)
+      {
+        // Using String Potentiometer
+
+        // Read the stroke value from ADC
+        stroke = read_stroke_from_adc();
+        // duty_cycle1,duty_cycle2,stroke
+        log_info("%f,%f,%f\r\n",duty_cycle1,duty_cycle2,stroke);
+
+        // Check if the duty cycles are acceptable for the measured stroke
+        result = check_bst_values(stroke, duty_cycle1, duty_cycle2);
+
+      }
+      // TODO: Implement test condition for No String potentiometer case
+      // If string potentiometer is not being used
+      else
+      {
+        // Not Using String Potentiometer
+        float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
+        // duty_cycle1,duty_cycle2,estimated_stroke
+        log_info("%f,%f,%f\r\n",duty_cycle1,duty_cycle2,estimated_stroke);
+      }
+    }
+
+    if (VirtUart0RxMsg) {
+      VirtUart0RxMsg = RESET;
+      VIRT_UART_Transmit(&huart0, VirtUart0ChannelBuffRx, VirtUart0ChannelRxSize);
+    }
 
 
     /* USER CODE END WHILE */
@@ -579,35 +622,61 @@ static void MX_GPIO_Init(void)
 void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
 {
 
-	char* strmsg = (char*) huart->pRxBuffPtr;
+	const char* server_message = (char*) huart->pRxBuffPtr;
+  const size_t server_message_len = huart->RxXfersize;
+	char* response_buffer[64] = "ERROR\n";
 
-	char* msg = 0;
-
-	if (strcmp(strmsg,"test"))
+	if (strncmp(server_message,"hello\n",server_message_len) == 0)
 	{
-		msg = "BST Test Acknowledged\n";
-		log_info("BST Data:\n")
+		response = "BST Test Acknowledged\n";
+    strcpy(response_buffer,response);
 	}
-	else
+  // start test once string potentiometer is used or not
+	else if(strncmp(server_message,"no\n",server_message_len) == 0)
 	{
-		msg = "Wrong Message\n";
-		log_info("%s Not a Message: BST Test Not Started\n", strmsg);
+		response = "Testing with no String Potentiometer\n";
+    strcpy(response_buffer,response);
+    start = 1;
 	}
+  else if(strncmp(server_message,"yes\n",server_message_len) == 0)
+  {
+    response = "Testing with String Potentiometer\n";
+    strcpy(response_buffer,response_buffer);
+    // set use_stringpot
+    use_stringpot = 1;
+    start = 1;
+  }
+  else if(strncmp(server_message,"ping\n",server_message_len) == 0)
+  {
+    (result == 0)? strcpy(response_buffer,"Testing...\n"):
+      (result == -1)? strcpy(response_buffer,"Fail\n"):
+      strcpy(response_buffer,"Pass\n");
+  }
+  else
+  {
+    message = "Error\n";
+    strcpy(response_buffer,message);
+  }
 
 
     /* Copy received message into buffer */
     // Limit the size of the received message to the maximum buffer size or the size of the message
-    VirtUart0ChannelRxSize = strlen(msg) < MAX_BUFFER_SIZE ? strlen(msg) : MAX_BUFFER_SIZE - 1;
+    VirtUart0ChannelRxSize = strlen(response_buffer) < MAX_BUFFER_SIZE ? strlen(response_buffer) : MAX_BUFFER_SIZE - 1;
     // Copy the received message into the buffer
-    memcpy(VirtUart0ChannelBuffRx, strlen(msg), VirtUart0ChannelRxSize);
+    memcpy(VirtUart0ChannelBuffRx, response_buffer, VirtUart0ChannelRxSize);
     // Set the flag to indicate that a message has been received
     VirtUart0RxMsg = SET;
 }
 
 
 
+//TODO: this only can return 
 // Checking the BST values
+
 int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle2)
+
+uint8_t check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
+
 {
 	// number of test points = 5 (25 / 5)
     int num_points = sizeof(bst_test_points) / sizeof(BSTTestPoint);
