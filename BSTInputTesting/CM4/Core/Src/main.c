@@ -654,8 +654,7 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
   }
   else
   {
-    message = "Error\n";
-    strcpy(response_buffer,message);
+    strcpy(response_buffer,"Error\n");
   }
 
 
@@ -675,7 +674,7 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
 
 int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle2)
 
-uint8_t check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
+//uint8_t check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
 
 {
 	// number of test points = 5 (25 / 5)
