@@ -35,15 +35,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-typedef struct {
-    float stroke;
-    float duty_cycle1_min;
-    float duty_cycle1_max;
-    float duty_cycle2_min;
-    float duty_cycle2_max;
-} BSTTestPoint;
-
-
 
 /* USER CODE END PTD */
 
@@ -54,6 +45,13 @@ typedef struct {
 
 #define LOGLEVEL LOGINFO
 #define __LOG_UART_IO_
+
+#define STROKE_MIN 0.0f
+#define STROKE_MAX 9.1f  // From graph
+#define DUTY_CYCLE_TOLERANCE 5.0f  // ±5% DC per specs
+#define SENSITIVITY 5.96f  // 5.96% DC/mm per specs
+#define S1_OFFSET 12.5f   // PWM1 offset: 12.5% DC
+#define S2_OFFSET 87.5f   // PWM2 offset: 87.5% DC
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -79,7 +77,6 @@ static uint8_t start = 0;
 // result: default at 0, -1 if fail, 1 if pass
 static int8_t result = 0;
 
-
 volatile float pulse_width1 = 0;
 volatile float pulse_width2 = 0;
 volatile float period1 = 0;
@@ -95,20 +92,6 @@ int case2 = 0;
 int test_passed = 0;
 
 uint8_t use_stringpot = 0;
-
-// 0 mm stroke, 12.5% +- 3.5% and 87.5% +-3.5 %
-// 2 mm stroke, 24.4% +- 3.5% and 75.7% +- 3.5%
-// 4 mm stroke, 36.3% +- 3.5% and 63.7% +- 3.5%
-// 6 mm stroke, 48.3% +- 3.5% and 51.7% +- 3.5%
-// 8 mm stroke, 63.2% +- 3.5% and 36.8% +- 3.5%
-
-const BSTTestPoint bst_test_points[] = {
-    {0.0f, 9.0f, 16.0f, 84.0f, 91.0f},
-    {2.0f, 20.9f, 27.9f, 72.2f, 79.2f},
-    {4.0f, 32.8f, 39.8f, 60.2f, 67.2f},
-    {6.0f, 44.8f, 51.8f, 48.2f, 55.2f},
-    {8.0f, 59.7f, 66.7f, 33.3f, 40.3f}
-};
 
 // Flag to indicate that a message has been received from the A7 core
 __IO FlagStatus VirtUart0RxMsg = RESET;
@@ -303,7 +286,7 @@ int main(void)
       else
       {
         // Not Using String Potentiometer
-        float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
+        estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
         // duty_cycle1,duty_cycle2,estimated_stroke
         log_info("%f,%f,%f\r\n",duty_cycle1,duty_cycle2,estimated_stroke);
       }
@@ -677,135 +660,62 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 //uint8_t check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
 
 {
-	// number of test points = 5 (25 / 5)
-    int num_points = sizeof(bst_test_points) / sizeof(BSTTestPoint);
+	float test_stroke;
 
-    // Check if stroke is less then the first stroke or more than the last stroke (out of range)
-    if (stroke < bst_test_points[0].stroke || stroke > bst_test_points[num_points - 1].stroke)
-    {
-    	return 0; // Stroke out of range
-    }
-
-    // Initialize pointers to find the nearest two test points
-    const BSTTestPoint *lower_point = NULL;
-    const BSTTestPoint *upper_point = NULL;
-
-    // For loop for the test points where the stroke might lie in between
-	for (int i = 0; i < num_points; i++)
-    {
-		if (stroke >= bst_test_points[i].stroke && stroke <= bst_test_points[i + 1].stroke)
-		{
-			lower_point = &bst_test_points[i];
-			upper_point = &bst_test_points[i + 1];
-			break;
-		}
-    }
-
-	// If stroke matches test point exactly, lower and upper point are set to that test point
-	if (lower_point == NULL || upper_point == NULL)
+	// Determining which stroke value based on string pot usage
+	if(use_stringpot)
 	{
-		// If the absolute difference of the stroke and the first test point is less than 0.1
-		if (fabsf(stroke - bst_test_points[0].stroke) < 0.1f)
-		{
-			// Set both the lower and upper point to 0mm test point
-			lower_point = &bst_test_points[0];
-			upper_point = &bst_test_points[0];
-		}
-		// If the absolute difference of the stroke and the test point number is less than 0.1
-		else if (fabsf(stroke - bst_test_points[num_points - 1].stroke) < 0.1f)
-		{
-			// Set both upper and lower point to the same mm test point
-			lower_point = &bst_test_points[num_points - 1];
-			upper_point = &bst_test_points[num_points - 1];
-		}
-		else
-		{
-			return 0; // Stroke not within test point range
-		}
+		test_stroke = stroke;
+	}
+	else
+	{
+		// Estimated stroke if no string pot
+		test_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
 	}
 
-	// Calculating interpolation ratio to calculate expected duty cycles
-	float ratio = (stroke - lower_point->stroke) / (upper_point->stroke - lower_point->stroke);
+	// Check if stroke in valid range
+	if (test_stroke < STROKE_MIN || test_stroke > STROKE_MAX)
+	{
+		return 0;
+	}
 
-	// Getting both pwm channel expected duty cycles with a 3.5% tolerance.
-	// Keeping in mind lower_point and upper_point are pointers to the nearest test points surround measured stroke
-	// Variable ratio will give us fractional position between the two test points
-	// This formula will calculate a value that lies between the lower and upper proportional to the ratio
-	// Starting with minimum or maximum duty cucle at lower test point
-	// Then adding the proportial difference between lower and upper duty cycle min or max, scaled by ratio
-	float expected_duty_cycle1_min = lower_point->duty_cycle1_min + ratio * (upper_point->duty_cycle1_min - lower_point->duty_cycle1_min);
-	float expected_duty_cycle1_max = lower_point->duty_cycle1_max + ratio * (upper_point->duty_cycle1_max - lower_point->duty_cycle1_max);
-	float expected_duty_cycle2_min = lower_point->duty_cycle2_min + ratio * (upper_point->duty_cycle2_min - lower_point->duty_cycle2_min);
-	float expected_duty_cycle2_max = lower_point->duty_cycle2_max + ratio * (upper_point->duty_cycle2_max - lower_point->duty_cycle2_max);
+	//Calculate expected duty cycles for stroke
+	float expected_duty_cycle1 = S1_OFFSET + (test_stroke * SENSITIVITY);
+	float expected_duty_cycle2 = S2_OFFSET + (test_stroke * SENSITIVITY);
 
+    // Check both possible cases (PWM1/PWM2 could be swapped)
+    case1 = (fabsf(duty_cycle1 - expected_duty_cycle1) <= DUTY_CYCLE_TOLERANCE &&
+             fabsf(duty_cycle2 - expected_duty_cycle2) <= DUTY_CYCLE_TOLERANCE);
 
-	// Allow tolerance of 3.5% according to BST product specs
-	float tolerance = 3.5f;
+    case2 = (fabsf(duty_cycle1 - expected_duty_cycle2) <= DUTY_CYCLE_TOLERANCE &&
+             fabsf(duty_cycle2 - expected_duty_cycle1) <= DUTY_CYCLE_TOLERANCE);
 
-	// Adjust interpolated ranges by tolerance
-	expected_duty_cycle1_min -= tolerance;
-	expected_duty_cycle1_max += tolerance;
-	expected_duty_cycle2_min -= tolerance;
-	expected_duty_cycle2_max += tolerance;
-
-	// Check if measured duty cycles fit within ranges in either order
-    case1 = (duty_cycle1 >= expected_duty_cycle1_min &&
-                 duty_cycle1 <= expected_duty_cycle1_max &&
-                 duty_cycle2 >= expected_duty_cycle2_min &&
-                 duty_cycle2 <= expected_duty_cycle2_max);
-
-    case2 = (duty_cycle1 >= expected_duty_cycle2_min &&
-                 duty_cycle1 <= expected_duty_cycle2_max &&
-                 duty_cycle2 >= expected_duty_cycle1_min &&
-                 duty_cycle2 <= expected_duty_cycle1_max);
-
-    // Check if either case passed to send back a test passed or failed to A7 Cortex
-    if (case1 || case2)
-    {
-    	return 1; // passed
-    }
-    else
-    {
-    	return 0; // failed
-    }
+    test_passed = (case1 || case2);
+    return test_passed;
 }
 
 // Estimate stroke from the given duty cycles if no string potentiometer
 float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 {
-	// Getting the number of test points (5) = 25 / 5
-	int num_points = sizeof(bst_test_points) / sizeof(BSTTestPoint);
+	// Sort duty cycles to identify which is PWM1
+	float lower_duty = fminf(duty_cycle1, duty_cycle2);
+	float higher_duty = fmaxf(duty_cycle1, duty_cycle2);
 
-	// Initializing the minimum error to the maximum floating point
-	float min_error = FLT_MAX;
+	//Calculate stroke using 5.96% DC/mm sensitivity
+	float stroke_from_lower = (lower_duty - S1_OFFSET) / SENSITIVITY;
+	float stroke_from_higher = (S2_OFFSET - higher_duty) / SENSITIVITY;
 
-	// Initializing the stroke to 0
-	estimated_stroke = 0.0f;
+	// Average the two estimates
+	estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2.0f;
 
-	// Iterate through the 5 test points
-	for(int i = 0; i < num_points; i++)
-	{
-		// Average of the duty cycle 1 max and min for test point i
-		float avg_duty_cycle1 = (bst_test_points[i].duty_cycle1_min + bst_test_points[i].duty_cycle1_max) / 2.0f;
-		// Average of the duty cycle 2 max and min for test point i
-		float avg_duty_cycle2 = (bst_test_points[i].duty_cycle2_min + bst_test_points[i].duty_cycle2_max) / 2.0f;
+    // Constrain to valid range
+    if(estimated_stroke < STROKE_MIN) estimated_stroke = STROKE_MIN;
+    if(estimated_stroke > STROKE_MAX) estimated_stroke = STROKE_MAX;
 
 
-		// Calculate sum of absolute differences between measured duty cycles and their average expected duty cycles
-		float error_case1 = fabsf(duty_cycle1 - avg_duty_cycle1) + fabsf(duty_cycle2 - avg_duty_cycle2);
-		// Calculate sum of absolute differences in case the measured duty cycle pins are swapped from the expected average duty cycles
-		float error_case2 = fabsf(duty_cycle1 - avg_duty_cycle2) + fabsf(duty_cycle2 - avg_duty_cycle1);
-
-		// Choosing the smaller error of the 2 cases to ensure best stroke correlation (smallest error), regardless or duty cycle order
-		float total_error = (error_case1 < error_case2) ? error_case1 : error_case2;
-
-		// Updating the estimcheck_bst_valuesated stroke if lower total error is found within test points
-		if (total_error < min_error)
-		{
-			min_error = total_error;
-			estimated_stroke = bst_test_points[i].stroke;
-		}
-	}
+    // Constrain to valid range
+    if(estimated_stroke < STROKE_MIN) estimated_stroke = STROKE_MIN;
+    if(estimated_stroke > STROKE_MAX) estimated_stroke = STROKE_MAX;
 
 	return estimated_stroke;
 }

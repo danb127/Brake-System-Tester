@@ -6,8 +6,12 @@
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
-		<item key="selection" value="ADC_SAMPLE"/>
+		<item key="selection" value="GPIO_"/>
 		<list key="findhistory">
+			<item value="GPIO_"/>
+			<item value="GPIO_InitStruct"/>
+			<item value="GPIO_InitStruct.Mode"/>
+			<item value="GPIO"/>
 			<item value="ADC_SAMPLE"/>
 			<item value="ADC_"/>
 			<item value="VIRT"/>

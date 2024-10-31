@@ -1,0 +1,17 @@
+01:16:37 **** Incremental Build of configuration Debug for project CWSInputTesting_CM4 ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "CWSInputTesting_CM4.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/danb127/Brake-System-Tester/CWSInputTesting/CM4/STM32MP157FACX_RAM.ld" --specs=nosys.specs -Wl,-Map="CWSInputTesting_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: CWSInputTesting_CM4.elf
+ 
+arm-none-eabi-size  CWSInputTesting_CM4.elf 
+arm-none-eabi-objdump -h -S CWSInputTesting_CM4.elf  > "CWSInputTesting_CM4.list"
+   text	   data	    bss	    dec	    hex	filename
+  56184	    288	   2652	  59124	   e6f4	CWSInputTesting_CM4.elf
+Finished building: default.size.stdout
+ 
+Finished building: CWSInputTesting_CM4.list
+ 
+
+01:16:38 Build Finished. 0 errors, 0 warnings. (took 931ms)
+

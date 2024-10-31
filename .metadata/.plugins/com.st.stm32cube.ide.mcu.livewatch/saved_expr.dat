@@ -1,3 +1,12 @@
 pressure
 V_adc
 adc_value
+V_sensor
+current_step
+dac_steps
+adc_averaged
+dac_voltage
+adc_voltage
+voltage_actual
+adc_buffer
+wear

@@ -1,0 +1,17 @@
+03:11:18 **** Incremental Build of configuration Debug for project ADCTesting_CM4 ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DCORE_CM4 -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../Core/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "ADCTesting_CM4.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/danb127/Brake-System-Tester/ADCTesting/CM4/STM32MP157FACX_RAM.ld" --specs=nosys.specs -Wl,-Map="ADCTesting_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: ADCTesting_CM4.elf
+ 
+arm-none-eabi-size  ADCTesting_CM4.elf 
+arm-none-eabi-objdump -h -S ADCTesting_CM4.elf  > "ADCTesting_CM4.list"
+   text	   data	    bss	    dec	    hex	filename
+  34212	     32	   1784	  36028	   8cbc	ADCTesting_CM4.elf
+Finished building: default.size.stdout
+ 
+Finished building: ADCTesting_CM4.list
+ 
+
+03:11:19 Build Finished. 0 errors, 0 warnings. (took 473ms)
+

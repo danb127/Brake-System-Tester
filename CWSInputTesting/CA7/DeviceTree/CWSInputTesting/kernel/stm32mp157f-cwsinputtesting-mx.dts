@@ -53,6 +53,12 @@
 
 &pinctrl {
 
+	m4_adc_pins_mx: m4_adc_mx-0 {
+		pins {
+			pinmux = <STM32_PINMUX('C', 3, ANALOG)>; /* ADC1_INP13 */
+		};
+	};
+
 	/* USER CODE BEGIN pinctrl */
 	/* USER CODE END pinctrl */
 };
@@ -119,6 +125,8 @@
 };
 
 &m4_adc{
+	pinctrl-names = "default";
+	pinctrl-0 = <&m4_adc_pins_mx>;
 	status = "okay";
 
 	/* USER CODE BEGIN m4_adc */
@@ -130,6 +138,13 @@
 
 	/* USER CODE BEGIN m4_dma2 */
 	/* USER CODE END m4_dma2 */
+};
+
+&m4_timers3{
+	status = "okay";
+
+	/* USER CODE BEGIN m4_timers3 */
+	/* USER CODE END m4_timers3 */
 };
 
 &mdma1{
@@ -158,6 +173,13 @@
 
 	/* USER CODE BEGIN tamp */
 	/* USER CODE END tamp */
+};
+
+&vrefbuf{
+	status = "okay";
+
+	/* USER CODE BEGIN vrefbuf */
+	/* USER CODE END vrefbuf */
 };
 
 /* USER CODE BEGIN addons */
