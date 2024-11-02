@@ -197,7 +197,11 @@ int main(void)
     Error_Handler();
    }
 
-
+  // Create Virtual RPMSG file 
+  if(VIRT_UART_Init(&huart0) != VIRT_UART_OK) {
+    log_err("Virt UART is FUCKED!\r\n");
+    Error_Handler();
+  }
   //csv header
   printf("time(s),duty_cycle1(%%),duty_cycle2(%%),stroke(mm)\r\n");
 
