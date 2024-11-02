@@ -1946,3 +1946,149 @@ Caused by: java.io.IOException: Error opening /dev/ttyACM0: Permission denied
 
 !ENTRY org.eclipse.cdt.core 1 0 2024-11-02 18:43:23.848
 !MESSAGE Indexed 'BSTInputTesting_CM4' (46 sources, 210 headers) in 4.79 sec: 22,002 declarations; 92,301 references; 3 unresolved inclusions; 94 syntax errors; 251 unresolved names (0.22%)
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 4 0 2024-11-02 18:56:15.164
+!MESSAGE java.io.IOException: Error opening /dev/ttyACM0: Permission denied
+!STACK 0
+com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialConsoleException: java.io.IOException: Error opening /dev/ttyACM0: Permission denied
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendCommand(SerialConsoleManager.java:831)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendDefaultCommand(SerialConsoleManager.java:442)
+	at com.st.stm32cube.ide.mpu.ide.ui.status.MPUWorkbenchWindowControlContribution$UIRefreshJob.run(MPUWorkbenchWindowControlContribution.java:477)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.io.IOException: Error opening /dev/ttyACM0: Permission denied
+	at org.eclipse.cdt.serial.SerialPort.open0(Native Method)
+	at org.eclipse.cdt.serial.SerialPort.open(SerialPort.java:316)
+	at com.st.stm32cube.ide.mpu.remote.serial.oss.internal.MPUSerialPort.open(MPUSerialPort.java:39)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendCommand(SerialConsoleManager.java:800)
+	... 3 more
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 4 0 2024-11-02 18:56:17.220
+!MESSAGE java.io.IOException: Error opening /dev/ttyACM0: Permission denied
+!STACK 0
+com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialConsoleException: java.io.IOException: Error opening /dev/ttyACM0: Permission denied
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendCommand(SerialConsoleManager.java:831)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendDefaultCommand(SerialConsoleManager.java:442)
+	at com.st.stm32cube.ide.mpu.ide.ui.status.MPUWorkbenchWindowControlContribution$UIRefreshJob.run(MPUWorkbenchWindowControlContribution.java:477)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.io.IOException: Error opening /dev/ttyACM0: Permission denied
+	at org.eclipse.cdt.serial.SerialPort.open0(Native Method)
+	at org.eclipse.cdt.serial.SerialPort.open(SerialPort.java:316)
+	at com.st.stm32cube.ide.mpu.remote.serial.oss.internal.MPUSerialPort.open(MPUSerialPort.java:39)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendCommand(SerialConsoleManager.java:800)
+	... 3 more
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 4 0 2024-11-02 18:56:21.308
+!MESSAGE Failed to flush serial output; seems UART is in use by another application...
+!STACK 0
+java.io.IOException: Failed to flush serial output; seems UART is in use by another application...
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.flushOutput(SerialConsoleManager.java:571)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.run(SerialConsoleManager.java:489)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 4 0 2024-11-02 18:56:26.288
+!MESSAGE Failed to flush serial output; seems UART is in use by another application...
+!STACK 0
+java.io.IOException: Failed to flush serial output; seems UART is in use by another application...
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.flushOutput(SerialConsoleManager.java:571)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.run(SerialConsoleManager.java:489)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 4 0 2024-11-02 18:56:31.244
+!MESSAGE Failed to flush serial output; seems UART is in use by another application...
+!STACK 0
+java.io.IOException: Failed to flush serial output; seems UART is in use by another application...
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.flushOutput(SerialConsoleManager.java:571)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.run(SerialConsoleManager.java:489)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.ssh 2 2 2024-11-02 18:57:02.256
+!MESSAGE Failed to extract inet addr from output:
+eth0      Link encap:Ethernet  HWaddr 10:E7:7A:E1:9D:00  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          Interrupt:57 Base address:0x4000 
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:80 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:80 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:5920 (5.7 KiB)  TX bytes:5920 (5.7 KiB)
+
+wlan0     Link encap:Ethernet  HWaddr 24:CD:8D:52:39:7B  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.ssh 2 2 2024-11-02 18:57:06.945
+!MESSAGE Failed to extract inet addr from output:
+eth0      Link encap:Ethernet  HWaddr 10:E7:7A:E1:9D:00  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          Interrupt:57 Base address:0x4000 
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:80 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:80 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:5920 (5.7 KiB)  TX bytes:5920 (5.7 KiB)
+
+wlan0     Link encap:Ethernet  HWaddr 24:CD:8D:52:39:7B  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.ssh 2 2 2024-11-02 18:57:11.618
+!MESSAGE Failed to extract inet addr from output:
+eth0      Link encap:Ethernet  HWaddr 10:E7:7A:E1:9D:00  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          Interrupt:57 Base address:0x4000 
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:80 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:80 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:5920 (5.7 KiB)  TX bytes:5920 (5.7 KiB)
+
+wlan0     Link encap:Ethernet  HWaddr 24:CD:8D:52:39:7B  
+          UP BROADCAST MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 4 0 2024-11-02 18:57:15.785
+!MESSAGE Failed to flush serial output; seems UART is in use by another application...
+!STACK 0
+java.io.IOException: Failed to flush serial output; seems UART is in use by another application...
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.flushOutput(SerialConsoleManager.java:571)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.run(SerialConsoleManager.java:489)
+	at java.base/java.lang.Thread.run(Thread.java:840)

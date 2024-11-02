@@ -1,17 +1,34 @@
-18:50:57 **** Incremental Build of configuration Debug for project BSTInputTesting_CM4 ****
+19:14:59 **** Incremental Build of configuration Debug for project BSTInputTesting_CM4 ****
 make -j8 all 
-arm-none-eabi-gcc "../OPENAMP/mbox_ipcc.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"OPENAMP/mbox_ipcc.d" -MT"OPENAMP/mbox_ipcc.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "OPENAMP/mbox_ipcc.o"
-arm-none-eabi-gcc "../OPENAMP/openamp.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"OPENAMP/openamp.d" -MT"OPENAMP/openamp.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "OPENAMP/openamp.o"
-arm-none-eabi-gcc "../OPENAMP/openamp_log.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"OPENAMP/openamp_log.d" -MT"OPENAMP/openamp_log.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "OPENAMP/openamp_log.o"
-arm-none-eabi-gcc "../OPENAMP/rsc_table.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"OPENAMP/rsc_table.d" -MT"OPENAMP/rsc_table.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "OPENAMP/rsc_table.o"
-arm-none-eabi-gcc "/home/danb127/Brake-System-Tester/BSTInputTesting/Middlewares/Third_Party/OpenAMP/virtual_driver/virt_uart.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Middlewares/Third_Party/OpenAMP/virt_uart.d" -MT"Middlewares/Third_Party/OpenAMP/virt_uart.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Middlewares/Third_Party/OpenAMP/virt_uart.o"
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+In file included from ../OPENAMP/openamp_conf.h:27,
+                 from ../OPENAMP/openamp.h:26,
+                 from ../Core/Src/main.c:21:
+../Core/Src/main.c: In function 'main':
+../OPENAMP/openamp_log.h:90:35: warning: format '%ld' expects argument of type 'long int', but argument 4 has type 'long double' [-Wformat=]
+   90 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
+      |                                   ^~~~~~~~~~~~~~
+../Core/Src/main.c:235:15: note: in expansion of macro 'log_info'
+  235 |               log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
+      |               ^~~~~~~~
+../OPENAMP/openamp_log.h:90:35: warning: format '%ld' expects argument of type 'long int', but argument 5 has type 'long double' [-Wformat=]
+   90 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
+      |                                   ^~~~~~~~~~~~~~
+../Core/Src/main.c:235:15: note: in expansion of macro 'log_info'
+  235 |               log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
+      |               ^~~~~~~~
+../OPENAMP/openamp_log.h:90:35: warning: format '%ld' expects argument of type 'long int', but argument 6 has type 'long double' [-Wformat=]
+   90 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
+      |                                   ^~~~~~~~~~~~~~
+../Core/Src/main.c:235:15: note: in expansion of macro 'log_info'
+  235 |               log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
+      |               ^~~~~~~~
 ../Core/Src/main.c: In function 'VIRT_UART0_RxCpltCallback':
-../Core/Src/main.c:575:12: warning: passing argument 1 to 'restrict'-qualified parameter aliases with argument 2 [-Wrestrict]
-  575 |     strcpy(response_buffer,response_buffer);
+../Core/Src/main.c:578:12: warning: passing argument 1 to 'restrict'-qualified parameter aliases with argument 2 [-Wrestrict]
+  578 |     strcpy(response_buffer,response_buffer);
       |            ^~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~
-../Core/Src/main.c:574:10: warning: unused variable 'response' [-Wunused-variable]
-  574 |     char response[] = "Testing with String Potentiometer\n";
+../Core/Src/main.c:577:10: warning: unused variable 'response' [-Wunused-variable]
+  577 |     char response[] = "Testing with String Potentiometer\n";
       |          ^~~~~~~~
 arm-none-eabi-gcc -o "BSTInputTesting_CM4.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/danb127/Brake-System-Tester/BSTInputTesting/CM4/STM32MP157FACX_RAM.ld" --specs=nosys.specs -Wl,-Map="BSTInputTesting_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: BSTInputTesting_CM4.elf
@@ -19,11 +36,11 @@ Finished building target: BSTInputTesting_CM4.elf
 arm-none-eabi-size  BSTInputTesting_CM4.elf 
 arm-none-eabi-objdump -h -S BSTInputTesting_CM4.elf  > "BSTInputTesting_CM4.list"
    text	   data	    bss	    dec	    hex	filename
-  58276	    292	 127080	 185648	  2d530	BSTInputTesting_CM4.elf
+  58328	    292	 127080	 185700	  2d564	BSTInputTesting_CM4.elf
 Finished building: default.size.stdout
  
 Finished building: BSTInputTesting_CM4.list
  
 
-18:50:58 Build Finished. 0 errors, 2 warnings. (took 726ms)
+19:15:00 Build Finished. 0 errors, 5 warnings. (took 522ms)
 
