@@ -240,7 +240,10 @@ int main(void)
               // Not Using String Potentiometer
               estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
               // duty_cycle1,duty_cycle2,estimated_stroke
-              log_info("%f,%f,%f\r\n",duty_cycle1,duty_cycle2,estimated_stroke);
+              long double dc1 = (long double)duty_cycle1;
+              long double dc2 = (long double)duty_cycle2;
+              long double strk = (long double)stroke;
+              log_info("%Lf,%Lf,%Lf\r\n",dc1,dc2,strk);
               result = check_bst_values(0, duty_cycle1, duty_cycle2); // 0 since check_bst_values will use estimated stroke
           }
       }
