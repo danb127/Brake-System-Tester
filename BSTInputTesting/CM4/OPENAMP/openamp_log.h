@@ -87,9 +87,10 @@ extern char system_log_buf[SYSTEM_TRACE_BUF_SZ]; /*!< buffer for debug traces */
 #define log_dbg(fmt, ...)
 #endif
 #if LOGLEVEL >= LOGINFO
-#define log_dbg(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
+#define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
 #else
 #define log_info(fmt, ...)
+#define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
 #endif
 #if LOGLEVEL >= LOGWARN
 #define log_warn(fmt, ...) printf("[%05ld.%03ld][WARN ]" fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
@@ -103,7 +104,7 @@ extern char system_log_buf[SYSTEM_TRACE_BUF_SZ]; /*!< buffer for debug traces */
 #endif
 #else
 // log wrapper around printf to include time
-#define log_dbg(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
+#define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
 #define log_info(fmt, ...)
 #define log_warn(fmt, ...)
 #define log_err(fmt, ...)
