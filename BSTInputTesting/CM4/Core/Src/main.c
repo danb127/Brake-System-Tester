@@ -644,7 +644,7 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
     int case2 = (fabsf(duty_cycle1 - expected_duty_cycle2) <= DUTY_CYCLE_TOLERANCE &&
              fabsf(duty_cycle2 - expected_duty_cycle1) <= DUTY_CYCLE_TOLERANCE);
 
-    test_passed = (case1 || case2)? 1: -1;
+    int test_passed = (case1 || case2)? 1: -1;
     return test_passed;
 }
 
