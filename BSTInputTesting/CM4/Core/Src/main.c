@@ -227,7 +227,10 @@ int main(void)
               // Using String Potentiometer
               stroke = read_stroke_from_adc();
               // duty_cycle1,duty_cycle2,stroke
-              log_info("%f,%f,%f\r\n",duty_cycle1,duty_cycle2,stroke);
+              long double dc1 = duty_cycle1;
+              long double dc2 = duty_cycle2;
+              long double strk = stroke;
+              log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
               result = check_bst_values(stroke, duty_cycle1, duty_cycle2);
           }
           else
