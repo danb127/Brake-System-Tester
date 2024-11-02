@@ -73,7 +73,7 @@ TIM_HandleTypeDef htim5;
 VIRT_UART_HandleTypeDef huart0;
 
 // start should be set once communication with server is established
-static uint8_t start = 1;
+static uint8_t start = 0;
 // result: default at 0, -1 if fail, 1 if pass
 static int8_t result = 0;
 
@@ -89,9 +89,6 @@ volatile float stroke = 0;
 volatile float estimated_stroke = 0;
 volatile float expected_duty_cycle1 = 0;
 volatile float expected_duty_cycle2 = 0;
-int case1 = 0;
-int case2 = 0;
-int test_passed = 0;
 
 uint8_t use_stringpot = 0;
 
@@ -245,6 +242,9 @@ int main(void)
               long double strk = (long double)stroke;
               log_info("%Lf,%Lf,%Lf\r\n",dc1,dc2,strk);
               result = check_bst_values(0, duty_cycle1, duty_cycle2); // 0 since check_bst_values will use estimated stroke
+              // stop running once result is evaluated
+              if(result != 0)
+                start = 0;
           }
       }
 
@@ -638,10 +638,10 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 	expected_duty_cycle2 = S2_OFFSET - (test_stroke * SENSITIVITY);
 
     // Check both possible cases (PWM1/PWM2 could be swapped)
-    case1 = (fabsf(duty_cycle1 - expected_duty_cycle1) <= DUTY_CYCLE_TOLERANCE &&
+    int case1 = (fabsf(duty_cycle1 - expected_duty_cycle1) <= DUTY_CYCLE_TOLERANCE &&
              fabsf(duty_cycle2 - expected_duty_cycle2) <= DUTY_CYCLE_TOLERANCE);
 
-    case2 = (fabsf(duty_cycle1 - expected_duty_cycle2) <= DUTY_CYCLE_TOLERANCE &&
+    int case2 = (fabsf(duty_cycle1 - expected_duty_cycle2) <= DUTY_CYCLE_TOLERANCE &&
              fabsf(duty_cycle2 - expected_duty_cycle1) <= DUTY_CYCLE_TOLERANCE);
 
     test_passed = (case1 || case2)? 1: -1;
