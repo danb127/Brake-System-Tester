@@ -1,28 +1,6 @@
-19:14:59 **** Incremental Build of configuration Debug for project BSTInputTesting_CM4 ****
+19:21:33 **** Incremental Build of configuration Debug for project BSTInputTesting_CM4 ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-In file included from ../OPENAMP/openamp_conf.h:27,
-                 from ../OPENAMP/openamp.h:26,
-                 from ../Core/Src/main.c:21:
-../Core/Src/main.c: In function 'main':
-../OPENAMP/openamp_log.h:90:35: warning: format '%ld' expects argument of type 'long int', but argument 4 has type 'long double' [-Wformat=]
-   90 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
-      |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:235:15: note: in expansion of macro 'log_info'
-  235 |               log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
-      |               ^~~~~~~~
-../OPENAMP/openamp_log.h:90:35: warning: format '%ld' expects argument of type 'long int', but argument 5 has type 'long double' [-Wformat=]
-   90 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
-      |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:235:15: note: in expansion of macro 'log_info'
-  235 |               log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
-      |               ^~~~~~~~
-../OPENAMP/openamp_log.h:90:35: warning: format '%ld' expects argument of type 'long int', but argument 6 has type 'long double' [-Wformat=]
-   90 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
-      |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:235:15: note: in expansion of macro 'log_info'
-  235 |               log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
-      |               ^~~~~~~~
 ../Core/Src/main.c: In function 'VIRT_UART0_RxCpltCallback':
 ../Core/Src/main.c:578:12: warning: passing argument 1 to 'restrict'-qualified parameter aliases with argument 2 [-Wrestrict]
   578 |     strcpy(response_buffer,response_buffer);
@@ -42,5 +20,5 @@ Finished building: default.size.stdout
 Finished building: BSTInputTesting_CM4.list
  
 
-19:15:00 Build Finished. 0 errors, 5 warnings. (took 522ms)
+19:21:33 Build Finished. 0 errors, 2 warnings. (took 573ms)
 
