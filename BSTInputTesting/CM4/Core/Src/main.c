@@ -73,7 +73,7 @@ TIM_HandleTypeDef htim5;
 VIRT_UART_HandleTypeDef huart0;
 
 // start should be set once communication with server is established
-static uint8_t start = 0;
+static uint8_t start = 1;
 // result: default at 0, -1 if fail, 1 if pass
 static int8_t result = 0;
 
@@ -87,6 +87,8 @@ volatile float frequency1 = 0;
 volatile float frequency2 = 0;
 volatile float stroke = 0;
 volatile float estimated_stroke = 0;
+volatile float expected_duty_cycle1 = 0;
+volatile float expected_duty_cycle2 = 0;
 int case1 = 0;
 int case2 = 0;
 int test_passed = 0;
@@ -629,8 +631,8 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 	}
 
 	//Calculate expected duty cycles for stroke
-	float expected_duty_cycle1 = S1_OFFSET + (test_stroke * SENSITIVITY);
-	float expected_duty_cycle2 = S2_OFFSET + (test_stroke * SENSITIVITY);
+	expected_duty_cycle1 = S1_OFFSET + (test_stroke * SENSITIVITY);
+	expected_duty_cycle2 = S2_OFFSET - (test_stroke * SENSITIVITY);
 
     // Check both possible cases (PWM1/PWM2 could be swapped)
     case1 = (fabsf(duty_cycle1 - expected_duty_cycle1) <= DUTY_CYCLE_TOLERANCE &&
@@ -648,7 +650,7 @@ float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 {
 	// Sort duty cycles to identify which is PWM1
 	float lower_duty = fminf(duty_cycle1, duty_cycle2);
-	float higher_duty = fmaxf(duty_cycle1, duty_cycle2);
+	float higher_duty = fmaxf(duty_cycle1,duty_cycle2);
 
 	//Calculate stroke using 5.96% DC/mm sensitivity
 	float stroke_from_lower = (lower_duty - S1_OFFSET) / SENSITIVITY;
