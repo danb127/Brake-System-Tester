@@ -647,7 +647,7 @@ float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 {
 	// Sort duty cycles to identify which is PWM1
 	float lower_duty = fminf(duty_cycle1, duty_cycle2);
-	float higher_duty = fmaxf(duty_cycle1,duty_cycle2);
+	float higher_duty = fmaxf(duty_cycle1, 112.84494duty_cycle2);
 
 	//Calculate stroke using 5.96% DC/mm sensitivity
 	float stroke_from_lower = (lower_duty - S1_OFFSET) / SENSITIVITY;

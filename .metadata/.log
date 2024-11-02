@@ -1907,3 +1907,42 @@ Command-line arguments:  -os linux -ws gtk -arch x86_64
 
 !ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2024-11-02 16:36:48.512
 !MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.ui 4 0 2024-11-02 18:35:01.927
+!MESSAGE Error in CDT UI during reconcile
+!STACK 1
+C Model Exception: C Model Status [Element main.c does not exist.]
+	at org.eclipse.cdt.internal.core.model.CElement.newNotPresentException(CElement.java:485)
+	at org.eclipse.cdt.internal.core.model.TranslationUnit.makeConsistent(TranslationUnit.java:583)
+	at org.eclipse.cdt.internal.core.model.ReconcileWorkingCopyOperation.executeOperation(ReconcileWorkingCopyOperation.java:65)
+	at org.eclipse.cdt.internal.core.model.CModelOperation.execute(CModelOperation.java:346)
+	at org.eclipse.cdt.internal.core.model.CModelOperation.run(CModelOperation.java:613)
+	at org.eclipse.cdt.internal.core.model.CModelOperation.runOperation(CModelOperation.java:641)
+	at org.eclipse.cdt.internal.core.model.WorkingCopy.reconcile(WorkingCopy.java:365)
+	at org.eclipse.cdt.internal.ui.text.CReconcilingStrategy.reconcile(CReconcilingStrategy.java:79)
+	at org.eclipse.cdt.internal.ui.text.CReconcilingStrategy.reconcile(CReconcilingStrategy.java:64)
+	at org.eclipse.cdt.internal.ui.text.CompositeReconcilingStrategy.reconcile(CompositeReconcilingStrategy.java:89)
+	at org.eclipse.cdt.internal.ui.text.CCompositeReconcilingStrategy.reconcile(CCompositeReconcilingStrategy.java:90)
+	at org.eclipse.jface.text.reconciler.MonoReconciler.process(MonoReconciler.java:78)
+	at org.eclipse.cdt.internal.ui.text.CReconciler.process(CReconciler.java:346)
+	at org.eclipse.jface.text.reconciler.AbstractReconciler$BackgroundThread.run(AbstractReconciler.java:207)
+!SUBENTRY 1 org.eclipse.cdt.core 4 969 2024-11-02 18:35:01.928
+!MESSAGE Element main.c does not exist.
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 4 0 2024-11-02 18:41:27.727
+!MESSAGE java.io.IOException: Error opening /dev/ttyACM0: Permission denied
+!STACK 0
+com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialConsoleException: java.io.IOException: Error opening /dev/ttyACM0: Permission denied
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendCommand(SerialConsoleManager.java:831)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendDefaultCommand(SerialConsoleManager.java:442)
+	at com.st.stm32cube.ide.mpu.ide.ui.status.MPUWorkbenchWindowControlContribution$UIRefreshJob.run(MPUWorkbenchWindowControlContribution.java:477)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.io.IOException: Error opening /dev/ttyACM0: Permission denied
+	at org.eclipse.cdt.serial.SerialPort.open0(Native Method)
+	at org.eclipse.cdt.serial.SerialPort.open(SerialPort.java:316)
+	at com.st.stm32cube.ide.mpu.remote.serial.oss.internal.MPUSerialPort.open(MPUSerialPort.java:39)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendCommand(SerialConsoleManager.java:800)
+	... 3 more
+
+!ENTRY org.eclipse.cdt.core 1 0 2024-11-02 18:43:23.848
+!MESSAGE Indexed 'BSTInputTesting_CM4' (46 sources, 210 headers) in 4.79 sec: 22,002 declarations; 92,301 references; 3 unresolved inclusions; 94 syntax errors; 251 unresolved names (0.22%)
