@@ -622,7 +622,7 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 	// Check if stroke in valid range
 	if (test_stroke < STROKE_MIN || test_stroke > STROKE_MAX)
 	{
-		return 0;
+		return -1;
 	}
 
 	//Calculate expected duty cycles for stroke
