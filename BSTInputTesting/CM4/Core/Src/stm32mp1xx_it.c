@@ -43,7 +43,6 @@
 /* USER CODE BEGIN PV */
 extern volatile float pulse_width1, pulse_width2;
 extern volatile float period1, period2;
-extern volatile float duty_cycle1, duty_cycle2;
 extern volatile float frequency1, frequency2;
 volatile uint32_t last_rising_edge1 = 0, last_rising_edge2 = 0;
 /* USER CODE END PV */
