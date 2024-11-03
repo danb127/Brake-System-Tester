@@ -25,8 +25,6 @@
 /* USER CODE BEGIN Includes */
 #include "openamp.h"
 #include "openamp_log.h"
-#include <float.h>
-#include <math.h>
 #include <string.h>
 #include <stdint.h>
 #include "virt_uart.h" // Or whatever the correct header file is for virtual UART
@@ -245,7 +243,7 @@ int main(void)
               long int dc2 = (long int)(10* duty_cycle2);
               long int strk = (long int)(10* estimated_stroke);
               log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
-              result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
+              result = (counter == 1000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
               // 0 since check_bst_values will use estimated stroke
               // stop running once result is evaluated
               if(result != 0)
@@ -643,11 +641,11 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 	expected_duty_cycle2 = S2_OFFSET - (test_stroke * SENSITIVITY);
 
     // Check both possible cases (PWM1/PWM2 could be swapped)
-    int case1 = (fabsf(duty_cycle1 - expected_duty_cycle1) <= DUTY_CYCLE_TOLERANCE &&
-             fabsf(duty_cycle2 - expected_duty_cycle2) <= DUTY_CYCLE_TOLERANCE);
+    int case1 = (~(duty_cycle1 - expected_duty_cycle1)-1 <= DUTY_CYCLE_TOLERANCE &&
+             ~(duty_cycle2 - expected_duty_cycle2)-1 <= DUTY_CYCLE_TOLERANCE);
 
-    int case2 = (fabsf(duty_cycle1 - expected_duty_cycle2) <= DUTY_CYCLE_TOLERANCE &&
-             fabsf(duty_cycle2 - expected_duty_cycle1) <= DUTY_CYCLE_TOLERANCE);
+    int case2 = (~(duty_cycle1 - expected_duty_cycle2)-1 <= DUTY_CYCLE_TOLERANCE &&
+             ~(duty_cycle2 - expected_duty_cycle1)-1 <= DUTY_CYCLE_TOLERANCE);
 
     int test_passed = ((case1 == 0)&&(case2 == 0))? 1: -1;
     return test_passed;
@@ -657,8 +655,8 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 {
 	// Sort duty cycles to identify which is PWM1
-	float lower_duty = fminf(duty_cycle1, duty_cycle2);
-	float higher_duty = fmaxf(duty_cycle1,duty_cycle2);
+	float lower_duty = (duty_cycle1 > duty_cycle2)? duty_cycle2: duty_cycle1;
+	float higher_duty = (duty_cycle1>duty_cycle2)? duty_cycle1: duty_cycle2;
 
 	//Calculate stroke using 5.96% DC/mm sensitivity
 	float stroke_from_lower = (lower_duty - S1_OFFSET) / SENSITIVITY;
