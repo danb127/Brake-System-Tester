@@ -116,7 +116,7 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart);
 int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2);
 
 // Function to calculate estimated stroke if no string potentiometer is selected
-float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2);
+int estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2);
 
 // Function to read stroke from ADC
 float read_stroke_from_adc(void);
