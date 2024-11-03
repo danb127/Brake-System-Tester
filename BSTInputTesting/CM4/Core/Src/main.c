@@ -663,7 +663,7 @@ float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 	float stroke_from_higher = (S2_OFFSET - higher_duty) / SENSITIVITY;
 
 	// Average the two estimates
-	estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2.0f;
+	float estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2.0f;
 
     // Constrain to valid range
     if(estimated_stroke < STROKE_MIN) estimated_stroke = STROKE_MIN;
