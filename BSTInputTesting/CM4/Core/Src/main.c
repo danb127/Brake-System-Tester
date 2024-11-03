@@ -666,13 +666,8 @@ int estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 	int estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2;
 
     // Constrain to valid range
-    if(estimated_stroke < STROKE_MIN) estimated_stroke = STROKE_MIN;
-    if(estimated_stroke > STROKE_MAX) estimated_stroke = STROKE_MAX;
-
-
-    // Constrain to valid range
-    if(estimated_stroke < STROKE_MIN) estimated_stroke = STROKE_MIN;
-    if(estimated_stroke > STROKE_MAX) estimated_stroke = STROKE_MAX;
+    //if(estimated_stroke < STROKE_MIN) estimated_stroke = STROKE_MIN;
+    //if(estimated_stroke > STROKE_MAX) estimated_stroke = STROKE_MAX;
 
 	return estimated_stroke;
 }
