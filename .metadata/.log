@@ -2092,3 +2092,18 @@ java.io.IOException: Failed to flush serial output; seems UART is in use by anot
 	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.flushOutput(SerialConsoleManager.java:571)
 	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.run(SerialConsoleManager.java:489)
 	at java.base/java.lang.Thread.run(Thread.java:840)
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 4 0 2024-11-03 15:59:41.178
+!MESSAGE java.io.IOException: Error opening /dev/ttyACM0: Permission denied
+!STACK 0
+com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialConsoleException: java.io.IOException: Error opening /dev/ttyACM0: Permission denied
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendCommand(SerialConsoleManager.java:831)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendDefaultCommand(SerialConsoleManager.java:442)
+	at com.st.stm32cube.ide.mpu.ide.ui.status.MPUWorkbenchWindowControlContribution$UIRefreshJob.run(MPUWorkbenchWindowControlContribution.java:477)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.io.IOException: Error opening /dev/ttyACM0: Permission denied
+	at org.eclipse.cdt.serial.SerialPort.open0(Native Method)
+	at org.eclipse.cdt.serial.SerialPort.open(SerialPort.java:316)
+	at com.st.stm32cube.ide.mpu.remote.serial.oss.internal.MPUSerialPort.open(MPUSerialPort.java:39)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendCommand(SerialConsoleManager.java:800)
+	... 3 more
