@@ -233,7 +233,7 @@ int main(void)
               int dc1 = (int)duty_cycle1;
               int dc2 = (int)duty_cycle2;
               int strk = (int)stroke;
-              log_info("%d,%d,%d\r\n",dc1,dc2,strk);
+              log_info("%Lf,%Lf,%Lf\r\n",dc1,dc2,strk);
               result = check_bst_values(stroke, duty_cycle1, duty_cycle2);
           }
           else
