@@ -2170,3 +2170,84 @@ Caused by: java.io.IOException: Error opening /dev/ttyACM0: Permission denied
 	at com.st.stm32cube.ide.mpu.remote.serial.oss.internal.MPUSerialPort.open(MPUSerialPort.java:39)
 	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendCommand(SerialConsoleManager.java:800)
 	... 3 more
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 4 0 2024-11-03 16:37:10.387
+!MESSAGE Failed to flush serial output; seems UART is in use by another application...
+!STACK 0
+java.io.IOException: Failed to flush serial output; seems UART is in use by another application...
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.flushOutput(SerialConsoleManager.java:571)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.run(SerialConsoleManager.java:489)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 4 0 2024-11-03 16:37:15.018
+!MESSAGE Failed to flush serial output; seems UART is in use by another application...
+!STACK 0
+java.io.IOException: Failed to flush serial output; seems UART is in use by another application...
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.flushOutput(SerialConsoleManager.java:571)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.run(SerialConsoleManager.java:489)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 4 0 2024-11-03 16:37:19.760
+!MESSAGE Failed to flush serial output; seems UART is in use by another application...
+!STACK 0
+java.io.IOException: Failed to flush serial output; seems UART is in use by another application...
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.flushOutput(SerialConsoleManager.java:571)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialReader.run(SerialConsoleManager.java:489)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+
+!ENTRY org.eclipse.ui 4 0 2024-11-03 16:43:33.428
+!MESSAGE Unhandled event loop exception
+!STACK 0
+org.eclipse.core.runtime.AssertionFailedException: null argument:Action must not be null
+	at org.eclipse.core.runtime.Assert.isNotNull(Assert.java:92)
+	at org.eclipse.jface.action.ContributionManager.add(ContributionManager.java:76)
+	at org.eclipse.debug.internal.ui.views.expression.ExpressionView.fillContextMenu(ExpressionView.java:83)
+	at org.eclipse.jface.action.MenuManager.fireAboutToShow(MenuManager.java:338)
+	at org.eclipse.jface.action.MenuManager.handleAboutToShow(MenuManager.java:468)
+	at org.eclipse.jface.action.MenuManager$2.menuShown(MenuManager.java:495)
+	at org.eclipse.swt.widgets.TypedListener.handleEvent(TypedListener.java:259)
+	at org.eclipse.swt.widgets.EventTable.sendEvent(EventTable.java:89)
+	at org.eclipse.swt.widgets.Display.sendEvent(Display.java:5854)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1529)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1555)
+	at org.eclipse.swt.widgets.Widget.sendEvent(Widget.java:1534)
+	at org.eclipse.swt.widgets.Menu._setVisible(Menu.java:290)
+	at org.eclipse.swt.widgets.Display.runPopups(Display.java:5106)
+	at org.eclipse.swt.widgets.Display.readAndDispatch(Display.java:4507)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine$5.run(PartRenderingEngine.java:1155)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:342)
+	at org.eclipse.e4.ui.internal.workbench.swt.PartRenderingEngine.run(PartRenderingEngine.java:1046)
+	at org.eclipse.e4.ui.internal.workbench.E4Workbench.createAndRunUI(E4Workbench.java:155)
+	at org.eclipse.ui.internal.Workbench.lambda$3(Workbench.java:648)
+	at org.eclipse.core.databinding.observable.Realm.runWithDefault(Realm.java:342)
+	at org.eclipse.ui.internal.Workbench.createAndRunWorkbench(Workbench.java:555)
+	at org.eclipse.ui.PlatformUI.createAndRunWorkbench(PlatformUI.java:173)
+	at org.eclipse.ui.internal.ide.application.IDEApplication.start(IDEApplication.java:152)
+	at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:208)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:136)
+	at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.start(EclipseAppLauncher.java:104)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:402)
+	at org.eclipse.core.runtime.adaptor.EclipseStarter.run(EclipseStarter.java:255)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.eclipse.equinox.launcher.Main.invokeFramework(Main.java:651)
+	at org.eclipse.equinox.launcher.Main.basicRun(Main.java:588)
+	at org.eclipse.equinox.launcher.Main.run(Main.java:1459)
+	at org.eclipse.equinox.launcher.Main.main(Main.java:1432)
+
+!ENTRY com.st.stm32cube.ide.mpu.remote.serial 4 0 2024-11-03 16:58:02.955
+!MESSAGE java.io.IOException: Error opening /dev/ttyACM0: No such file or directory
+!STACK 0
+com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager$SerialConsoleException: java.io.IOException: Error opening /dev/ttyACM0: No such file or directory
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendCommand(SerialConsoleManager.java:831)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendDefaultCommand(SerialConsoleManager.java:442)
+	at com.st.stm32cube.ide.mpu.ide.ui.status.MPUWorkbenchWindowControlContribution$UIRefreshJob.run(MPUWorkbenchWindowControlContribution.java:477)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.io.IOException: Error opening /dev/ttyACM0: No such file or directory
+	at org.eclipse.cdt.serial.SerialPort.open0(Native Method)
+	at org.eclipse.cdt.serial.SerialPort.open(SerialPort.java:316)
+	at com.st.stm32cube.ide.mpu.remote.serial.oss.internal.MPUSerialPort.open(MPUSerialPort.java:39)
+	at com.st.stm32cube.ide.mpu.remote.serial.SerialConsoleManager.sendCommand(SerialConsoleManager.java:800)
+	... 3 more
