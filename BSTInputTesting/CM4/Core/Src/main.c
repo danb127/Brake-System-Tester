@@ -641,11 +641,11 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 	expected_duty_cycle2 = S2_OFFSET - (test_stroke * SENSITIVITY);
 
     // Check both possible cases (PWM1/PWM2 could be swapped)
-    int case1 = (~(duty_cycle1 - expected_duty_cycle1)-1 <= DUTY_CYCLE_TOLERANCE &&
-             ~(duty_cycle2 - expected_duty_cycle2)-1 <= DUTY_CYCLE_TOLERANCE);
+    int case1 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
+             ~((long int)(duty_cycle2 * 10) - (long int)(expected_duty_cycle2 * 10))-1 <= DUTY_CYCLE_TOLERANCE);
 
-    int case2 = (~(duty_cycle1 - expected_duty_cycle2)-1 <= DUTY_CYCLE_TOLERANCE &&
-             ~(duty_cycle2 - expected_duty_cycle1)-1 <= DUTY_CYCLE_TOLERANCE);
+    int case2 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle2 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
+             ~((long int)(duty_cycle2 * 10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE);
 
     int test_passed = ((case1 == 0)&&(case2 == 0))? 1: -1;
     return test_passed;
