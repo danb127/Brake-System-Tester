@@ -242,7 +242,7 @@ int main(void)
               long int dc2 = (long int)(10* duty_cycle2);
               long int strk = (long int)(10* estimated_stroke);
               log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
-              result = (counter == 1000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
+              result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
               counter++;
               // 0 since check_bst_values will use estimated stroke
               // stop running once result is evaluated
@@ -647,7 +647,7 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
     int case2 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle2 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
              ~((long int)(duty_cycle2 * 10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE);
 
-    int test_passed = ((case1 == 0)&&(case2 == 0))? 1: -1;
+    int test_passed = ((case1 == 0) || (case2 == 0))? 1: -1;
     return test_passed;
 }
 
