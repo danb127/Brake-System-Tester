@@ -116,7 +116,7 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart);
 int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2);
 
 // Function to calculate estimated stroke if no string potentiometer is selected
-int estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2);
+float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2);
 
 // Function to read stroke from ADC
 float read_stroke_from_adc(void);
@@ -236,7 +236,7 @@ int main(void)
           else
           {
               // Not Using String Potentiometer
-              int estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
+              float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
               // duty_cycle1,duty_cycle2,estimated_stroke
               long int dc1 = (long int)(10* duty_cycle1);
               long int dc2 = (long int)(10* duty_cycle2);
@@ -652,18 +652,18 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 }
 
 // Estimate stroke from the given duty cycles if no string potentiometer
-int estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
+float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 {
 	// Sort duty cycles to identify which is PWM1
-	int lower_duty = (duty_cycle1 > duty_cycle2)? (int)duty_cycle2: (int)duty_cycle1;
-	int higher_duty = (duty_cycle1>duty_cycle2)? (int)duty_cycle1: (int)duty_cycle2;
+	float lower_duty = (duty_cycle1 > duty_cycle2)? duty_cycle2: duty_cycle1;
+	float higher_duty = (duty_cycle1>duty_cycle2)? duty_cycle1: duty_cycle2;
 
 	//Calculate stroke using 5.96% DC/mm sensitivity
-	int stroke_from_lower = (int)((lower_duty - S1_OFFSET) / SENSITIVITY);
-	int stroke_from_higher =(int) ((S2_OFFSET - higher_duty) / SENSITIVITY);
+	float stroke_from_lower = ((lower_duty - S1_OFFSET) / SENSITIVITY);
+	float stroke_from_higher = ((S2_OFFSET - higher_duty) / SENSITIVITY);
 
 	// Average the two estimates
-	int estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2;
+	float estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2;
 
     // Constrain to valid range
     //if(estimated_stroke < STROKE_MIN) estimated_stroke = STROKE_MIN;
