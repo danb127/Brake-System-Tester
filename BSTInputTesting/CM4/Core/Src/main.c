@@ -44,8 +44,8 @@
 #define LOGLEVEL LOGINFO
 #define __LOG_UART_IO_
 
-#define STROKE_MIN 0.0f
-#define STROKE_MAX 9.1f  // From graph
+#define STROKE_MIN 1
+#define STROKE_MAX 9 // From graph
 #define DUTY_CYCLE_TOLERANCE 5.0f  // ±5% DC per specs
 #define SENSITIVITY 5.96f  // 5.96% DC/mm per specs
 #define S1_OFFSET 12.5f   // PWM1 offset: 12.5% DC
@@ -242,7 +242,7 @@ int main(void)
               long int dc2 = (long int)(10* duty_cycle2);
               long int strk = (long int)(10* estimated_stroke);
               log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
-              result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
+              result = (counter == 5000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
               counter++;
               // 0 since check_bst_values will use estimated stroke
               // stop running once result is evaluated
