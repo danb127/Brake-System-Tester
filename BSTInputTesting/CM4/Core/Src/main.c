@@ -212,6 +212,9 @@ int main(void)
   {
       OPENAMP_check_for_message();
 
+      // Delay before reading
+      HAL_Delay(10000);
+
       if(start)
       {
           // Calculating the frequency and duty cycle for both channels
