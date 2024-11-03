@@ -236,7 +236,7 @@ int main(void)
           else
           {
               // Not Using String Potentiometer
-              float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
+              int estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
               // duty_cycle1,duty_cycle2,estimated_stroke
               long int dc1 = (long int)(10* duty_cycle1);
               long int dc2 = (long int)(10* duty_cycle2);
@@ -652,18 +652,18 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 }
 
 // Estimate stroke from the given duty cycles if no string potentiometer
-float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
+int estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 {
 	// Sort duty cycles to identify which is PWM1
-	float lower_duty = (duty_cycle1 > duty_cycle2)? duty_cycle2: duty_cycle1;
-	float higher_duty = (duty_cycle1>duty_cycle2)? duty_cycle1: duty_cycle2;
+	int lower_duty = (duty_cycle1 > duty_cycle2)? (int)duty_cycle2: (int)duty_cycle1;
+	int higher_duty = (duty_cycle1>duty_cycle2)? (int)duty_cycle1: (int)duty_cycle2;
 
 	//Calculate stroke using 5.96% DC/mm sensitivity
-	float stroke_from_lower = (lower_duty - S1_OFFSET) / SENSITIVITY;
-	float stroke_from_higher = (S2_OFFSET - higher_duty) / SENSITIVITY;
+	int stroke_from_lower = (int)((lower_duty - S1_OFFSET) / SENSITIVITY);
+	int stroke_from_higher =(int) ((S2_OFFSET - higher_duty) / SENSITIVITY);
 
 	// Average the two estimates
-	float estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2.0f;
+	int estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2;
 
     // Constrain to valid range
     if(estimated_stroke < STROKE_MIN) estimated_stroke = STROKE_MIN;
