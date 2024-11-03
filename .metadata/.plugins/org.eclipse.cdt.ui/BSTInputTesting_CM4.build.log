@@ -1,4 +1,4 @@
-18:11:36 **** Incremental Build of configuration Debug for project BSTInputTesting_CM4 ****
+18:19:16 **** Incremental Build of configuration Debug for project BSTInputTesting_CM4 ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 ../Core/Src/main.c: In function 'VIRT_UART0_RxCpltCallback':
@@ -14,11 +14,11 @@ Finished building target: BSTInputTesting_CM4.elf
 arm-none-eabi-size  BSTInputTesting_CM4.elf 
 arm-none-eabi-objdump -h -S BSTInputTesting_CM4.elf  > "BSTInputTesting_CM4.list"
    text	   data	    bss	    dec	    hex	filename
-  57352	    288	 127060	 184700	  2d17c	BSTInputTesting_CM4.elf
+  57320	    288	 127060	 184668	  2d15c	BSTInputTesting_CM4.elf
 Finished building: default.size.stdout
  
 Finished building: BSTInputTesting_CM4.list
  
 
-18:11:37 Build Finished. 0 errors, 2 warnings. (took 580ms)
+18:19:16 Build Finished. 0 errors, 2 warnings. (took 580ms)
 
