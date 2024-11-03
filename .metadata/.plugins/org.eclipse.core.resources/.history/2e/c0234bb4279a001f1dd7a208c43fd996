@@ -203,7 +203,7 @@ int main(void)
   }
   //csv header
   printf("time(s),duty_cycle1(%%),duty_cycle2(%%),stroke(mm)\r\n");
-  uint32_t counter = 0;
+  uint_32 counter = 0;
 
   /* USER CODE END 2 */
 
