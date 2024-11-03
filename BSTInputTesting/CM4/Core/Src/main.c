@@ -203,6 +203,7 @@ int main(void)
   }
   //csv header
   printf("time(s),duty_cycle1(%%),duty_cycle2(%%),stroke(mm)\r\n");
+  uint_32 counter = 0;
 
   /* USER CODE END 2 */
 
@@ -213,7 +214,7 @@ int main(void)
       OPENAMP_check_for_message();
 
       // Delay before reading
-      HAL_Delay(10000);
+      HAL_Delay(1000);
 
       if(start)
       {
@@ -240,11 +241,12 @@ int main(void)
               // Not Using String Potentiometer
               estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
               // duty_cycle1,duty_cycle2,estimated_stroke
-              int dc1 = (int)duty_cycle1;
-              int dc2 = (int)duty_cycle2;
-              int strk = (int)stroke;
+              int dc1 = (int)(100* duty_cycle1);
+              int dc2 = (int)(100* duty_cycle2);
+              int strk = (int)(100* stroke);
               log_info("%d,%d,%d\r\n",dc1,dc2,strk);
-              result = check_bst_values(0, duty_cycle1, duty_cycle2); // 0 since check_bst_values will use estimated stroke
+              result = (counter == 500000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0; 
+              // 0 since check_bst_values will use estimated stroke
               // stop running once result is evaluated
               if(result != 0)
                 start = 0;
