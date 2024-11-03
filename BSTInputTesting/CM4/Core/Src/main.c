@@ -214,7 +214,7 @@ int main(void)
       OPENAMP_check_for_message();
 
 
-      HAL_Delay(10);
+      // HAL_Delay(10);
 
       if(start)
       {
@@ -241,10 +241,10 @@ int main(void)
               // Not Using String Potentiometer
               estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
               // duty_cycle1,duty_cycle2,estimated_stroke
-              int dc1 = (int)(100* duty_cycle1);
-              int dc2 = (int)(100* duty_cycle2);
-              int strk = (int)(100* estimated_stroke);
-              log_info("%d,%d,%d\r\n",dc1,dc2,strk);
+              long int dc1 = (long int)(10* duty_cycle1);
+              long int dc2 = (long int)(10* duty_cycle2);
+              long int strk = (long int)(10* estimated_stroke);
+              log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
               result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
               // 0 since check_bst_values will use estimated stroke
               // stop running once result is evaluated
