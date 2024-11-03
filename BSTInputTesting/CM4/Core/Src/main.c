@@ -84,7 +84,6 @@ volatile float duty_cycle2 = 0;
 volatile float frequency1 = 0;
 volatile float frequency2 = 0;
 volatile float stroke = 0;
-volatile float estimated_stroke = 0;
 volatile float expected_duty_cycle1 = 0;
 volatile float expected_duty_cycle2 = 0;
 
@@ -237,7 +236,7 @@ int main(void)
           else
           {
               // Not Using String Potentiometer
-              estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
+              float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
               // duty_cycle1,duty_cycle2,estimated_stroke
               long int dc1 = (long int)(10* duty_cycle1);
               long int dc2 = (long int)(10* duty_cycle2);
