@@ -161,9 +161,6 @@ int main(void)
   }
   else
   {
-    SystemClock_Config();
-    /* Configure the peripherals common clocks */
-    PeriphCommonClock_Config();
     /* IPCC initialisation */
     MX_IPCC_Init();
     /* OpenAmp initialisation ---------------------------------*/
