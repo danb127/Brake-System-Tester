@@ -10,3 +10,9 @@ adc_voltage
 voltage_actual
 adc_buffer
 wear
+duty_cycle1
+duty_cycle2
+estimated_stroke
+case1
+case2
+voltage

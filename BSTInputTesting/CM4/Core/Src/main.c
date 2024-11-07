@@ -71,7 +71,7 @@ TIM_HandleTypeDef htim5;
 VIRT_UART_HandleTypeDef huart0;
 
 // start should be set once communication with server is established
-static uint8_t start = 0;
+static uint8_t start = 1;
 // result: default at 0, -1 if fail, 1 if pass
 static int8_t result = 0;
 
@@ -86,6 +86,9 @@ volatile float frequency2 = 0;
 volatile float stroke = 0;
 volatile float expected_duty_cycle1 = 0;
 volatile float expected_duty_cycle2 = 0;
+float estimated_stroke = 0;
+int case1 = 0;
+int case2 = 0;
 
 uint8_t use_stringpot = 0;
 
@@ -247,7 +250,7 @@ int main(void)
               // 0 since check_bst_values will use estimated stroke
               // stop running once result is evaluated
               if(result != 0)
-                start = 0;
+                start = 1;
           }
       }
 
@@ -641,10 +644,10 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 	expected_duty_cycle2 = S2_OFFSET - (test_stroke * SENSITIVITY);
 
     // Check both possible cases (PWM1/PWM2 could be swapped)
-    int case1 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
+    case1 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
              ~((long int)(duty_cycle2 * 10) - (long int)(expected_duty_cycle2 * 10))-1 <= DUTY_CYCLE_TOLERANCE);
 
-    int case2 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle2 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
+    case2 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle2 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
              ~((long int)(duty_cycle2 * 10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE);
 
     int test_passed = ((case1 == 0) || (case2 == 0))? 1: -1;
@@ -663,7 +666,7 @@ float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 	float stroke_from_higher = ((S2_OFFSET - higher_duty) / SENSITIVITY);
 
 	// Average the two estimates
-	float estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2;
+	estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2;
 
     // Constrain to valid range
     //if(estimated_stroke < STROKE_MIN) estimated_stroke = STROKE_MIN;

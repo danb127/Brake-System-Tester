@@ -132,6 +132,13 @@
 	/* USER CODE END m4_dma2 */
 };
 
+&m4_timers3{
+	status = "okay";
+
+	/* USER CODE BEGIN m4_timers3 */
+	/* USER CODE END m4_timers3 */
+};
+
 &mdma1{
 	status = "okay";
 

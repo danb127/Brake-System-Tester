@@ -82,7 +82,7 @@ volatile int test_status = 0; // 0= fail, 1 = pass
 volatile uint32_t adc_buffer[ADC_BUFFER_SIZE];
 
 // ADC Parameters
-const float V_ref = 3.3f;
+const float V_ref = 3.146f;
 const float divider_factor = 2.0f;
 /* USER CODE END PV */
 
@@ -456,8 +456,8 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
 float get_expected_wear(float voltage)
 {
     // Ensure voltage is within bounds
-    if(voltage < VOLTAGE_MIN) voltage = VOLTAGE_MIN;
-    if(voltage > VOLTAGE_MAX) voltage = VOLTAGE_MAX;
+    //if(voltage < VOLTAGE_MIN) voltage = VOLTAGE_MIN;
+    //if(voltage > VOLTAGE_MAX) voltage = VOLTAGE_MAX;
 
     // wear = wear_min + (v - v_min)/(v_max - v_min) * wear_range
     return WEAR_MIN + ((voltage - VOLTAGE_MIN) / VOLTAGE_RANGE) * WEAR_RANGE;
@@ -483,8 +483,8 @@ int test_cws_functionality(float voltage, float wear) {
 // Modify your ADC callbacks to include wear calculation:
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-    static uint32_t sum = 0;
-    static uint32_t count = 0;
+    static int sum = 0;
+    static int count = 0;
 
     for(int i = ADC_BUFFER_SIZE/2; i < ADC_BUFFER_SIZE; i++) {
         sum += adc_buffer[i];
@@ -520,8 +520,8 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 // Half transfer callback
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
 {
-    static uint32_t sum = 0;
-    static uint32_t count = 0;
+    static int sum = 0;
+    static int count = 0;
 
     for(int i = 0; i < ADC_BUFFER_SIZE/2; i++) {
         sum += adc_buffer[i];
