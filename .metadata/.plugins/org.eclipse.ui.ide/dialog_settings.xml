@@ -9,6 +9,7 @@
 		<item key="SmartImportRootWizardPage.STORE_NESTED_PROJECTS" value="true"/>
 		<item key="SmartImportRootWizardPage.STORE_CONFIGURE_NATURES" value="true"/>
 		<list key="org.eclipse.ui.internal.wizards.datatransfer.SmartImportRootWizardPage.knownSources">
+			<item value="/home/danb127/Brake-System-Tester/TestRelease/BSTTestRelease"/>
 			<item value="/home/danb127/Brake-System-Tester/ADCTesting"/>
 			<item value="/home/danb127/Brake-System-Tester/BSTInputTesting"/>
 			<item value="/home/danb127/Brake-System-Tester"/>

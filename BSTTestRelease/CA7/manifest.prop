@@ -1,0 +1,5 @@
+MANIFEST_VERSION = openstlinux-5.15-yocto-kirkstone-mp1-v22.11.23
+KERNEL_DT = ./DeviceTree/BSTTestRelease/kernel
+OPTEE_DT = ./DeviceTree/BSTTestRelease/optee-os
+UBOOT_DT = ./DeviceTree/BSTTestRelease/u-boot
+TFA_DT = ./DeviceTree/BSTTestRelease/tf-a
