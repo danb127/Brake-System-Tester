@@ -348,3 +348,10 @@ Finished building: default.size.stdout
  
 Finished building: BSTTestRelease_CM4.list
  
+17:47:46 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
+make -j8 all 
+arm-none-eabi-size  BSTTestRelease_CM4.elf 
+   text	   data	    bss	    dec	    hex	filename
+  60548	    292	  68792	 129632	  1fa60	BSTTestRelease_CM4.elf
+Finished building: default.size.stdout
+ 
