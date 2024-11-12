@@ -49,7 +49,7 @@
   * @{
   */
 #if defined (__LOG_TRACE_IO_)
-#define SYSTEM_TRACE_BUF_SZ 1024 * 128
+#define SYSTEM_TRACE_BUF_SZ 1024 * 64
 #endif
 
 #define LOGQUIET 0
