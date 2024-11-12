@@ -72,7 +72,7 @@ TIM_HandleTypeDef htim5;
 VIRT_UART_HandleTypeDef huart0;
 
 // start should be set once communication with server is established
-static uint8_t start = 0;
+static uint8_t start = 1;
 // result: default at 0, -1 if fail, 1 if pass
 static int8_t result = 0;
 
@@ -249,7 +249,7 @@ int main(void)
               long int dc2 = (long int)(10* duty_cycle2);
               long int strk = (long int)(10* estimated_stroke);
               log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
-              result = (counter == 5000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
+              result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
               counter++;
               // 0 since check_bst_values will use estimated stroke
               // stop running once result is evaluated
@@ -479,7 +479,7 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
-  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
   sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
   sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
   sConfigIC.ICFilter = 0;

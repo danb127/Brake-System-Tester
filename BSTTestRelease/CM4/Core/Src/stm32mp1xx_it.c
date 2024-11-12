@@ -45,7 +45,6 @@ extern volatile float pulse_width1, pulse_width2;
 extern volatile float period1, period2;
 extern volatile float frequency1, frequency2;
 volatile uint32_t last_rising_edge1 = 0, last_rising_edge2 = 0;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -226,7 +225,6 @@ void ADC1_IRQHandler(void)
 void TIM3_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM3_IRQn 0 */
-	  /* USER CODE BEGIN TIM3_IRQn 0 */
 		  if (__HAL_TIM_GET_FLAG(&htim3, TIM_FLAG_CC2) != RESET)
 		  {
 		    if (__HAL_TIM_GET_IT_SOURCE(&htim3, TIM_IT_CC2) != RESET)
