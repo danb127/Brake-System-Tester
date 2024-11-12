@@ -253,7 +253,7 @@ int main(void)
               counter++;
               // 0 since check_bst_values will use estimated stroke
               // stop running once result is evaluated
-              if(result != 0)
+              if(result != 0 || counter == 10000)
                 start = 1;
           }
       }
