@@ -206,7 +206,7 @@ int main(void)
     Error_Handler();
   }
   //csv header
-  printf("time(s),duty_cycle1(%%),duty_cycle2(%%),stroke(mm)\r\n");
+  printf("time(s),duty_cycle1(%%),duty_cycle2(%%),freq1(%%),freq2(%%),stroke(mm)\r\n");
   uint32_t counter = 0;
 
   /* USER CODE END 2 */
@@ -217,6 +217,8 @@ int main(void)
   {
       OPENAMP_check_for_message();
 
+      float current_d1 = 0;
+      float current_d2 = 0;
 
       HAL_Delay(10);
 
@@ -228,6 +230,7 @@ int main(void)
 
           duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
           duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
+
 
           if(use_stringpot)
           {
@@ -247,8 +250,10 @@ int main(void)
               // duty_cycle1,duty_cycle2,estimated_stroke
               long int dc1 = (long int)(10* duty_cycle1);
               long int dc2 = (long int)(10* duty_cycle2);
+              long int f1 = (long int)frequency1;
+              long int f2 = (long int)frequency2;
               long int strk = (long int)(10* estimated_stroke);
-              log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
+              log_info("%ld,%ld,%ld,%ld,%ld\r\n",dc1,dc2,f1,f2,strk);
               result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
               counter++;
               // 0 since check_bst_values will use estimated stroke
