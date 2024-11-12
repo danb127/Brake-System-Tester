@@ -38,6 +38,8 @@
 /* USER CODE BEGIN PD */
 #define MAX_BUFFER_SIZE RPMSG_BUFFER_SIZE
 
+#define __LOG_TRACE_IO_
+
 
 #define LOGLEVEL LOGINFO
 #define __LOG_UART_IO_
