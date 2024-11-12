@@ -1,4 +1,4 @@
-17:41:20 **** Build of configuration Debug for project BSTTestRelease_CM4 ****
+19:28:00 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
 make -j8 all 
 arm-none-eabi-size  BSTTestRelease_CM4.elf 
    text	   data	    bss	    dec	    hex	filename

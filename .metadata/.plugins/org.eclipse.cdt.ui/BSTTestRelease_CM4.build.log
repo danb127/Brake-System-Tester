@@ -1,4 +1,4 @@
-17:41:20 **** Build of configuration Debug for project BSTTestRelease_CM4 ****
+19:28:00 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
 make -j8 all 
 arm-none-eabi-size  BSTTestRelease_CM4.elf 
    text	   data	    bss	    dec	    hex	filename
@@ -6,5 +6,5 @@ arm-none-eabi-size  BSTTestRelease_CM4.elf
 Finished building: default.size.stdout
  
 
-17:41:20 Build Finished. 0 errors, 0 warnings. (took 180ms)
+19:28:00 Build Finished. 0 errors, 0 warnings. (took 183ms)
 
