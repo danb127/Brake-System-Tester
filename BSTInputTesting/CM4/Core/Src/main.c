@@ -245,7 +245,7 @@ int main(void)
               long int dc2 = (long int)(10* duty_cycle2);
               long int strk = (long int)(10* estimated_stroke);
               log_info("%ld,%ld,%ld\r\n",dc1,dc2,strk);
-              result = (counter == 50000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
+              result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
               counter++;
               // 0 since check_bst_values will use estimated stroke
               // stop running once result is evaluated

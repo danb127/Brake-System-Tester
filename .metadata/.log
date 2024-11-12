@@ -8007,3 +8007,6 @@ Command-line arguments:  -os linux -ws gtk -arch x86_64
 
 !ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2024-11-12 14:10:08.954
 !MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.core 1 0 2024-11-12 14:53:47.916
+!MESSAGE Indexed 'BSTTestRelease_CM4' (46 sources, 149 headers) in 4.08 sec: 11,493 declarations; 63,602 references; 0 unresolved inclusions; 39 syntax errors; 44 unresolved names (0.059%)
