@@ -217,8 +217,6 @@ int main(void)
   {
       OPENAMP_check_for_message();
 
-      float current_d1 = 0;
-      float current_d2 = 0;
 
       HAL_Delay(10);
 
@@ -227,6 +225,9 @@ int main(void)
           // Calculating the frequency and duty cycle for both channels
           frequency1 = (period1 > 0) ? (((float) SystemCoreClock) / ((htim3.Init.Prescaler + 1) * period1)) : 0;
           frequency2 = (period2 > 0) ? (((float) SystemCoreClock) / ((htim5.Init.Prescaler + 1) * period2)) : 0;
+
+          if((frequency1 > 205) || (frequency1 < 195) || (frequency2 > 205) || (frequency2) < 195)
+            continue;
 
           duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
           duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
