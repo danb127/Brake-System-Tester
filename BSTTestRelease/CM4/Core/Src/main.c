@@ -270,12 +270,12 @@ int main(void)
               long int f2 = (int)frequency2;
               long int strk = (int)(100* estimated_stroke);
               //        DC1.x,DC2.x,MM.x ,F1,j2  
-              log_info("%d.%d,%d.%d,%d.%d,%d.%d,%d.%d\r\n"
+              log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
                   ,dc1/100,dc1%100
                   ,dc2/100,dc2%100,
                   strk/10,strk%10,
                   f1/10,f1%10
-                  ,f2/10,f2%10);
+                  ,fl/10,f2%10);
               result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
               counter++;
               // 0 since check_bst_values will use estimated stroke
@@ -749,13 +749,11 @@ float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 	//Calculate stroke using 5.96% DC/mm sensitivity
 	float stroke_from_lower = ((lower_duty - S1_OFFSET) / SENSITIVITY);
 	float stroke_from_higher = ((S2_OFFSET - higher_duty) / SENSITIVITY);
+  
+  // error margin is 3.5%
 
 	// Average the two estimates
 	estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2;
-
-    // Constrain to valid range
-    //if(estimated_stroke < STROKE_MIN) estimated_stroke = STROKE_MIN;
-    //if(estimated_stroke > STROKE_MAX) estimated_stroke = STROKE_MAX;
 
 	return estimated_stroke;
 }
