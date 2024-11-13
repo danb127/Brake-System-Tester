@@ -266,16 +266,16 @@ int main(void)
               // duty_cycle1,duty_cycle2,estimated_stroke
               long int dc1 = (int)(100* duty_cycle1);
               long int dc2 = (int)(100* duty_cycle2);
-              long int f1 = (int)frequency1 * 10;
-              long int f2 = (int)frequency2 * 10;
-              long int strk = (int)(10* estimated_stroke);
+              long int f1 = (int)frequency1;
+              long int f2 = (int)frequency2;
+              long int strk = (int)(100* estimated_stroke);
               //        DC1.x,DC2.x,MM.x ,F1,j2  
               log_info("%d.%d,%d.%d,%d.%d,%d.%d,%d.%d\r\n"
                   ,dc1/100,dc1%100
                   ,dc2/100,dc2%100,
                   strk/10,strk%10,
-                  f1*10,f1%10
-                  ,f2*10,f2%10);
+                  f1/10,f1%10
+                  ,fl/10,f2%10);
               result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
               counter++;
               // 0 since check_bst_values will use estimated stroke
