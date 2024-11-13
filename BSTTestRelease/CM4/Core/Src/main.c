@@ -275,7 +275,7 @@ int main(void)
                   ,dc2/100,dc2%100,
                   strk/10,strk%10,
                   f1/10,f1%10
-                  ,fl/10,f2%10);
+                  ,f2/10,f2%10);
               result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
               counter++;
               // 0 since check_bst_values will use estimated stroke
