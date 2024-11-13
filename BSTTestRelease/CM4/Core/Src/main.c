@@ -248,6 +248,9 @@ int main(void)
           if((duty_cycle1/dc_prev1 > 1.1) || (duty_cycle2/dc_prev2) > 1.1)
             continue;
 
+          dc_prev1 = duty_cycle1;
+          dc_prev2 = duty_cycle2;
+
           if(use_stringpot)
           {
               // Using String Potentiometer
