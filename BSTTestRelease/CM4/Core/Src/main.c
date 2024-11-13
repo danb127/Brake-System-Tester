@@ -48,8 +48,8 @@
 #define STROKE_MAX 9 // From graph
 #define DUTY_CYCLE_TOLERANCE 5.0f  // ±5% DC per specs
 #define SENSITIVITY 5.96f  // 5.96% DC/mm per specs
-#define S1_OFFSET 12.5f   // PWM1 offset: 12.5% DC
-#define S2_OFFSET 87.5f   // PWM2 offset: 87.5% DC
+//#define S1_OFFSET 12.5f   // PWM1 offset: 12.5% DC
+//#define S2_OFFSET 87.5f   // PWM2 offset: 87.5% DC
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -87,6 +87,10 @@ volatile float frequency2 = 0;
 volatile float stroke = 0;
 volatile float expected_duty_cycle1 = 0;
 volatile float expected_duty_cycle2 = 0;
+
+float s1_offset;
+float s2_offset;
+
 float estimated_stroke = 0;
 int case1 = 0;
 int case2 = 0;
@@ -238,15 +242,28 @@ int main(void)
           duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
           duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
 
+          float lower_duty = (duty_cycle1 > duty_cycle2)? duty_cycle2: duty_cycle1;
+          float higher_duty = (duty_cycle1>duty_cycle2)? duty_cycle1: duty_cycle2;
+
+          if(((lower_duty>16) || (lower_duty< 9) && (higher_duty> 91) || (higher_duty< 84)) &&
+              dc_prev1 == -1 && dc_prev2 == -1) {
+            continue;
+          }
+
+
           if(dc_prev1 == -1.0f && dc_prev2 == -1.0f) {
             dc_prev1 = duty_cycle1;
             dc_prev2 = duty_cycle2;
+
+            s1_offset = duty_cycle1;
+            s2_offset = duty_cycle2;
             continue;
           }
 
           // if change is greater than 10%, not possible change physically, skip reading that data
           if((duty_cycle1/dc_prev1 > 1.1) || (duty_cycle2/dc_prev2) > 1.1)
             continue;
+
 
           dc_prev1 = duty_cycle1;
           dc_prev2 = duty_cycle2;
@@ -750,8 +767,8 @@ float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 	float higher_duty = (duty_cycle1>duty_cycle2)? duty_cycle1: duty_cycle2;
 
 	//Calculate stroke using 5.96% DC/mm sensitivity
-	float stroke_from_lower = ((lower_duty - S1_OFFSET) / SENSITIVITY);
-	float stroke_from_higher = ((S2_OFFSET - higher_duty) / SENSITIVITY);
+	float stroke_from_lower = ((lower_duty - s1_offset) / SENSITIVITY);
+	float stroke_from_higher = ((s2_offset- higher_duty) / SENSITIVITY);
   
   // error margin is 3.5%
 
