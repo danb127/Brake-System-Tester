@@ -1,4 +1,4 @@
-16:08:59 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
+16:48:11 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 In file included from ../OPENAMP/openamp_conf.h:27,
@@ -8,69 +8,69 @@ In file included from ../OPENAMP/openamp_conf.h:27,
 ../OPENAMP/openamp_log.h:89:35: warning: format '%d' expects argument of type 'int', but argument 4 has type 'long int' [-Wformat=]
    89 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
       |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:273:15: note: in expansion of macro 'log_info'
-  273 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
+../Core/Src/main.c:293:15: note: in expansion of macro 'log_info'
+  293 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
       |               ^~~~~~~~
 ../OPENAMP/openamp_log.h:89:35: warning: format '%d' expects argument of type 'int', but argument 5 has type 'long int' [-Wformat=]
    89 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
       |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:273:15: note: in expansion of macro 'log_info'
-  273 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
+../Core/Src/main.c:293:15: note: in expansion of macro 'log_info'
+  293 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
       |               ^~~~~~~~
 ../OPENAMP/openamp_log.h:89:35: warning: format '%d' expects argument of type 'int', but argument 6 has type 'long int' [-Wformat=]
    89 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
       |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:273:15: note: in expansion of macro 'log_info'
-  273 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
+../Core/Src/main.c:293:15: note: in expansion of macro 'log_info'
+  293 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
       |               ^~~~~~~~
 ../OPENAMP/openamp_log.h:89:35: warning: format '%d' expects argument of type 'int', but argument 7 has type 'long int' [-Wformat=]
    89 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
       |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:273:15: note: in expansion of macro 'log_info'
-  273 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
+../Core/Src/main.c:293:15: note: in expansion of macro 'log_info'
+  293 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
       |               ^~~~~~~~
 ../OPENAMP/openamp_log.h:89:35: warning: format '%d' expects argument of type 'int', but argument 8 has type 'long int' [-Wformat=]
    89 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
       |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:273:15: note: in expansion of macro 'log_info'
-  273 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
+../Core/Src/main.c:293:15: note: in expansion of macro 'log_info'
+  293 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
       |               ^~~~~~~~
 ../OPENAMP/openamp_log.h:89:35: warning: format '%d' expects argument of type 'int', but argument 9 has type 'long int' [-Wformat=]
    89 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
       |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:273:15: note: in expansion of macro 'log_info'
-  273 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
+../Core/Src/main.c:293:15: note: in expansion of macro 'log_info'
+  293 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
       |               ^~~~~~~~
 ../OPENAMP/openamp_log.h:89:35: warning: format '%d' expects argument of type 'int', but argument 10 has type 'long int' [-Wformat=]
    89 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
       |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:273:15: note: in expansion of macro 'log_info'
-  273 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
+../Core/Src/main.c:293:15: note: in expansion of macro 'log_info'
+  293 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
       |               ^~~~~~~~
 ../OPENAMP/openamp_log.h:89:35: warning: format '%d' expects argument of type 'int', but argument 11 has type 'long int' [-Wformat=]
    89 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
       |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:273:15: note: in expansion of macro 'log_info'
-  273 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
+../Core/Src/main.c:293:15: note: in expansion of macro 'log_info'
+  293 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
       |               ^~~~~~~~
 ../OPENAMP/openamp_log.h:89:35: warning: format '%d' expects argument of type 'int', but argument 12 has type 'long int' [-Wformat=]
    89 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
       |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:273:15: note: in expansion of macro 'log_info'
-  273 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
+../Core/Src/main.c:293:15: note: in expansion of macro 'log_info'
+  293 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
       |               ^~~~~~~~
 ../OPENAMP/openamp_log.h:89:35: warning: format '%d' expects argument of type 'int', but argument 13 has type 'long int' [-Wformat=]
    89 | #define log_info(fmt, ...) printf("%05ld.%03ld,"fmt, HAL_GetTick()/1000, HAL_GetTick() % 1000, ##__VA_ARGS__)
       |                                   ^~~~~~~~~~~~~~
-../Core/Src/main.c:273:15: note: in expansion of macro 'log_info'
-  273 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
+../Core/Src/main.c:293:15: note: in expansion of macro 'log_info'
+  293 |               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
       |               ^~~~~~~~
 ../Core/Src/main.c: In function 'VIRT_UART0_RxCpltCallback':
-../Core/Src/main.c:672:12: warning: passing argument 1 to 'restrict'-qualified parameter aliases with argument 2 [-Wrestrict]
-  672 |     strcpy(response_buffer,response_buffer);
+../Core/Src/main.c:692:12: warning: passing argument 1 to 'restrict'-qualified parameter aliases with argument 2 [-Wrestrict]
+  692 |     strcpy(response_buffer,response_buffer);
       |            ^~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~
-../Core/Src/main.c:671:10: warning: unused variable 'response' [-Wunused-variable]
-  671 |     char response[] = "Testing with String Potentiometer\n";
+../Core/Src/main.c:691:10: warning: unused variable 'response' [-Wunused-variable]
+  691 |     char response[] = "Testing with String Potentiometer\n";
       |          ^~~~~~~~
 arm-none-eabi-gcc -o "BSTTestRelease_CM4.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/danb127/Brake-System-Tester/BSTTestRelease/CM4/STM32MP157FACX_RAM.ld" --specs=nosys.specs -Wl,-Map="BSTTestRelease_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: BSTTestRelease_CM4.elf
@@ -78,7 +78,7 @@ Finished building target: BSTTestRelease_CM4.elf
 arm-none-eabi-size  BSTTestRelease_CM4.elf 
 arm-none-eabi-objdump -h -S BSTTestRelease_CM4.elf  > "BSTTestRelease_CM4.list"
    text	   data	    bss	    dec	    hex	filename
-  62400	    292	  68792	 131484	  2019c	BSTTestRelease_CM4.elf
+  62660	    292	  68800	 131752	  202a8	BSTTestRelease_CM4.elf
 Finished building: default.size.stdout
  
 Finished building: BSTTestRelease_CM4.list
