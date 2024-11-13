@@ -246,7 +246,7 @@ int main(void)
 
           // if change is greater than 10%, not possible change physically, skip reading that data
           if((duty_cycle1/dc_prev1 > 1.1) || (duty_cycle2/dc_prev2) > 1.1)
-            continue;
+            continue
 
           if(use_stringpot)
           {
@@ -255,7 +255,7 @@ int main(void)
               // duty_cycle1,duty_cycle2,stroke
               int dc1 = (int)duty_cycle1;
               int dc2 = (int)duty_cycle2;
-              int strk = (int)stroke;
+              int strk = (int)stroke * 10;
               log_info("%d,%d,%d\r\n",dc1,dc2,strk);
               result = check_bst_values(stroke, duty_cycle1, duty_cycle2);
           }
@@ -264,12 +264,18 @@ int main(void)
               // Not Using String Potentiometer
               float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
               // duty_cycle1,duty_cycle2,estimated_stroke
-              long int dc1 = (long int)(10* duty_cycle1);
-              long int dc2 = (long int)(10* duty_cycle2);
-              long int f1 = (long int)frequency1;
-              long int f2 = (long int)frequency2;
-              long int strk = (long int)(10* estimated_stroke);
-              log_info("%ld,%ld,%ld,%ld,%ld\r\n",dc1,dc2,f1,f2,strk);
+              long int dc1 = (int)(100* duty_cycle1);
+              long int dc2 = (int)(100* duty_cycle2);
+              long int f1 = (int)frequency1 * 10;
+              long int f2 = (int)frequency2 * 10;
+              long int strk = (int)(10* estimated_stroke);
+              //        DC1.x,DC2.x,MM.x ,F1,j2  
+              log_info("%d.%d,%d.%d,%d.%d,%d.%d,%d.%d\r\n"
+                  ,dc1/100,dc1%100
+                  ,dc2/100,dc2%100,
+                  strk/10,strk%10
+                  f1*10,f1%10
+                  ,f2*10,f2%10);
               result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
               counter++;
               // 0 since check_bst_values will use estimated stroke
