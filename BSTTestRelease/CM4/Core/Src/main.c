@@ -245,8 +245,8 @@ int main(void)
           float lower_duty = (duty_cycle1 > duty_cycle2)? duty_cycle2: duty_cycle1;
           float higher_duty = (duty_cycle1>duty_cycle2)? duty_cycle1: duty_cycle2;
 
-          if(((lower_duty>16) || (lower_duty< 9) && (higher_duty> 91) || (higher_duty< 84)) &&
-              dc_prev1 == -1 && dc_prev2 == -1) {
+          if((((lower_duty>16) || (lower_duty< 9)) && ((higher_duty> 91) || (higher_duty< 84))) &&
+              (dc_prev1 == -1 && dc_prev2 == -1)) {
             continue;
           }
 
@@ -745,8 +745,8 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 	}
 
 	//Calculate expected duty cycles for stroke
-	expected_duty_cycle1 = S1_OFFSET + (test_stroke * SENSITIVITY);
-	expected_duty_cycle2 = S2_OFFSET - (test_stroke * SENSITIVITY);
+	expected_duty_cycle1 = s1_offset+ (test_stroke * SENSITIVITY);
+	expected_duty_cycle2 = s2_offset- (test_stroke * SENSITIVITY);
 
     // Check both possible cases (PWM1/PWM2 could be swapped)
     case1 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
