@@ -246,7 +246,7 @@ int main(void)
 
           // if change is greater than 10%, not possible change physically, skip reading that data
           if((duty_cycle1/dc_prev1 > 1.1) || (duty_cycle2/dc_prev2) > 1.1)
-            continue
+            continue;
 
           if(use_stringpot)
           {
@@ -273,7 +273,7 @@ int main(void)
               log_info("%d.%d,%d.%d,%d.%d,%d.%d,%d.%d\r\n"
                   ,dc1/100,dc1%100
                   ,dc2/100,dc2%100,
-                  strk/10,strk%10
+                  strk/10,strk%10,
                   f1*10,f1%10
                   ,f2*10,f2%10);
               result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
