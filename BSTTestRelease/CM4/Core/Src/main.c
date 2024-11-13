@@ -208,6 +208,11 @@ int main(void)
   //csv header
   printf("time(s),duty_cycle1(%%),duty_cycle2(%%),freq1(%%),freq2(%%),stroke(mm)\r\n");
   uint32_t counter = 0;
+  
+  // keep track of previous duty cycle to see if there is a large change
+  float dc_prev1 = -1;
+  float dc_prev2 = -1;
+
 
   /* USER CODE END 2 */
 
@@ -217,6 +222,7 @@ int main(void)
   {
       OPENAMP_check_for_message();
 
+      // if dc changes more than 10%, skip current iteration
 
       HAL_Delay(10);
 
@@ -232,6 +238,15 @@ int main(void)
           duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
           duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
 
+          if(dc_prev1 == -1.0f && dc_prev2 == -1.0f) {
+            dc_prev1 = duty_cycle1;
+            dc_prev2 = duty_cycle2;
+            continue;
+          }
+
+          // if change is greater than 10%, not possible change physically, skip reading that data
+          if((duty_cycle1/dc_prev1 > 1.1) || (duty_cycle2/dc_prev2) > 1.1)
+            continue;
 
           if(use_stringpot)
           {
