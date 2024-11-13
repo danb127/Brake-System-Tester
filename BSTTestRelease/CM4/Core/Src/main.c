@@ -261,7 +261,7 @@ int main(void)
           }
 
           // if change is greater than 10%, not possible change physically, skip reading that data
-          if((duty_cycle1/dc_prev1 > 1.1) || (duty_cycle2/dc_prev2) > 1.1)
+          if((dc_prev1/duty_cycle1 > 1.2) || (dc_prev2/duty_cycle2) > 1.2)
             continue;
 
 
@@ -284,11 +284,11 @@ int main(void)
               // Not Using String Potentiometer
               float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
               // duty_cycle1,duty_cycle2,estimated_stroke
-              long int dc1 = (int)(100* duty_cycle1);
-              long int dc2 = (int)(100* duty_cycle2);
-              long int f1 = (int)frequency1;
-              long int f2 = (int)frequency2;
-              long int strk = (int)(100* estimated_stroke);
+              int dc1 = (int)(100* duty_cycle1);
+              int dc2 = (int)(100* duty_cycle2);
+              int f1 = (int)frequency1;
+              int f2 = (int)frequency2;
+              int strk = (int)(100* estimated_stroke);
               //        DC1.x,DC2.x,MM.x ,F1,j2  
               log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
                   ,dc1/100,dc1%100
