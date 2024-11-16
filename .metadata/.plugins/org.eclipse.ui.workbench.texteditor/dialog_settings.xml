@@ -6,8 +6,9 @@
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
-		<item key="selection" value="50000"/>
+		<item key="selection" value="f1"/>
 		<list key="findhistory">
+			<item value="f1"/>
 			<item value="50000"/>
 			<item value="tim5"/>
 			<item value="tim4"/>
@@ -21,6 +22,7 @@
 			<item value="Wear"/>
 		</list>
 		<list key="replacehistory">
+			<item value=""/>
 		</list>
 	</section>
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">

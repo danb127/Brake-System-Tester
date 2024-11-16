@@ -1,20 +1,28 @@
-17:06:49 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
+17:51:58 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:242:12: warning: unused variable 'counter' [-Wunused-variable]
+  242 |   uint32_t counter = 0;
+      |            ^~~~~~~
 ../Core/Src/main.c: In function 'VIRT_UART0_RxCpltCallback':
-../Core/Src/main.c:692:12: warning: passing argument 1 to 'restrict'-qualified parameter aliases with argument 2 [-Wrestrict]
-  692 |     strcpy(response_buffer,response_buffer);
+../Core/Src/main.c:732:12: warning: passing argument 1 to 'restrict'-qualified parameter aliases with argument 2 [-Wrestrict]
+  732 |     strcpy(response_buffer,response_buffer);
       |            ^~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~
-../Core/Src/main.c:691:10: warning: unused variable 'response' [-Wunused-variable]
-  691 |     char response[] = "Testing with String Potentiometer\n";
+../Core/Src/main.c:731:10: warning: unused variable 'response' [-Wunused-variable]
+  731 |     char response[] = "Testing with String Potentiometer\n";
       |          ^~~~~~~~
+../Core/Src/main.c: In function 'check_bst_values':
+../Core/Src/main.c:803:6: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+  803 |   if(bst_test.tests[(int)test_stroke].tested = 0) {
+      |      ^~~~~~~~
 arm-none-eabi-gcc -o "BSTTestRelease_CM4.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/danb127/Brake-System-Tester/BSTTestRelease/CM4/STM32MP157FACX_RAM.ld" --specs=nosys.specs -Wl,-Map="BSTTestRelease_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: BSTTestRelease_CM4.elf
  
 arm-none-eabi-size  BSTTestRelease_CM4.elf 
 arm-none-eabi-objdump -h -S BSTTestRelease_CM4.elf  > "BSTTestRelease_CM4.list"
    text	   data	    bss	    dec	    hex	filename
-  62648	    292	  68800	 131740	  2029c	BSTTestRelease_CM4.elf
+  62948	    292	  68824	 132064	  203e0	BSTTestRelease_CM4.elf
 Finished building: default.size.stdout
  
 Finished building: BSTTestRelease_CM4.list
