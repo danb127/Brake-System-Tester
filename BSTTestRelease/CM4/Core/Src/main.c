@@ -131,6 +131,34 @@ float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2);
 // Function to read stroke from ADC
 float read_stroke_from_adc(void);
 
+// evauluate if test cases passed or not, a single fail causes it to fail
+void evaluate_test_result(void);
+
+typedef struct {
+  uint8_t passed;
+  uint8_t tested;
+}test_point;
+
+// 6 test_points for each distance
+#define MAX_DISTANCE
+test_point tests[MAX_DISTANCE];
+
+typedef struct {
+  size_t done;
+  test_point tests[MAX_DISTANCE];
+}BST_Test;
+
+
+BST_Test bst_test;
+
+
+
+/* for testing;
+ *  from estimated stroke distance, check to ensure each one is within range
+ *  distance that should be tested, maximum of 6 (for now)
+ */
+
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -217,6 +245,16 @@ int main(void)
   float dc_prev1 = -1;
   float dc_prev2 = -1;
 
+  
+  for(int x = 0;x < MAX_DISTANCE;x++) {
+    tests[x] = { 0, 0}
+  }
+
+  bst_test = {
+    .tests = tests
+    .done = 0
+  };
+
 
   /* USER CODE END 2 */
 
@@ -261,7 +299,8 @@ int main(void)
           }
 
           // if change is greater than 10%, not possible change physically, skip reading that data
-          if((dc_prev1/duty_cycle1 > 1.2) || (dc_prev2/duty_cycle2) > 1.2)
+          if(((dc_prev1/duty_cycle1 > 1.2)^(duty_cycle1/dc_prev1 > 1.2)) || 
+              (dc_prev2/duty_cycle2>1.2)^(duty_cycle2/dc_prev2 > 1.2))
             continue;
 
 
@@ -296,12 +335,13 @@ int main(void)
                   strk/10,strk%10,
                   f1/10,f1%10
                   ,f2/10,f2%10);
-              result = (counter == 10000) ? check_bst_values(0, duty_cycle1, duty_cycle2): 0;
-              counter++;
-              // 0 since check_bst_values will use estimated stroke
-              // stop running once result is evaluated
-              if(result != 0 || counter == 10000)
+
+              check_bst_values(0, duty_cycle1, duty_cycle2);
+
+              if(bst_test.done == 6) {
                 start = 1;
+
+              }
           }
       }
 
@@ -744,9 +784,37 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 		return -1;
 	}
 
+
+
 	//Calculate expected duty cycles for stroke
 	expected_duty_cycle1 = s1_offset+ (test_stroke * SENSITIVITY);
 	expected_duty_cycle2 = s2_offset- (test_stroke * SENSITIVITY);
+
+  upperdc = (duty_cycle1 > duty_cycle2)? duty_cycle1:duty_cycle2;
+  lowerdc= (duty_cycle1 > duty_cycle2)? duty_cycle2:duty_cycle1;
+
+  expected_upperdc = (expected_duty_cycle1 > expected_duty_cycle2)? expected_duty_cycle1:expected_duty_cycle2; 
+  expected_lowerdc = (expected_duty_cycle1 > expected_duty_cycle2)? expected_duty_cycle2:expected_duty_cycle1; 
+
+  // is measured DC within 5 of the expected
+  // eg. measured = 12% expected = 20%, should fail 
+  // distance away from 20 is greater than 5
+  //
+  if(bst_test.tests[(int)test_stroke].tested = 0) {
+    bst_test.tests[(int)test_stroke].tested = 1;
+
+    // multiply result of number by -1 if less than 0 
+    upper_diff =  (upperdc - expected_upperdc < 0)? (upperdc - expected_upperdc) * -1: upperdc - expected_upperdc;
+    lower_diff =  (lowerdc - expected_lowerdc < 0)? (lowerdc - expected_lowerdc) * -1: lowerdc - expected_lowerdc;
+
+    // one of them failed
+    if(upper_diff > 5 || lower_diff > 5) {
+     bst_test.tests[(int)test_stroke].passed = -1;
+    }
+     bst_test.done++;
+  }
+
+  
 
     // Check both possible cases (PWM1/PWM2 could be swapped)
     case1 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
@@ -776,6 +844,17 @@ float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 	estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2;
 
 	return estimated_stroke;
+}
+
+void
+evaluate_test_result(void) {
+  // default result is passing
+  result = 1;
+  for(int x = 0; x < MAX_DISTANCE;++x) {
+    if(bst_test.tests[x].passed == -1) {
+      result = -1;
+    } 
+  }
 }
 
 
