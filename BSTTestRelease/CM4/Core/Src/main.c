@@ -274,7 +274,7 @@ int main(void)
           frequency1 = (period1 > 0) ? (((float) SystemCoreClock) / ((htim3.Init.Prescaler + 1) * period1)) : 0;
           frequency2 = (period2 > 0) ? (((float) SystemCoreClock) / ((htim5.Init.Prescaler + 1) * period2)) : 0;
 
-          if((frequency1 > 205) || (frequency1 < 195) || (frequency2 > 205) || (frequency2) < 195)
+          if((frequency1 > 210) || (frequency1 < 190) || (frequency2 > 210) || (frequency2) < 190)
             continue;
 
           duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
@@ -327,14 +327,13 @@ int main(void)
               int dc2 = (int)(100* duty_cycle2);
               int f1 = (int)frequency1;
               int f2 = (int)frequency2;
-              int strk = (int)(100* estimated_stroke);
+              int strk = (int)(10* estimated_stroke);
               //        DC1.x,DC2.x,MM.x ,F1,j2  
-              log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d,%02d.%02d\r\n"
+              log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d,%02d\r\n"
                   ,dc1/100,dc1%100
                   ,dc2/100,dc2%100,
                   strk/10,strk%10,
-                  f1/10,f1%10
-                  ,f2/10,f2%10);
+                  f1,f2);
 
               check_bst_values(0, duty_cycle1, duty_cycle2);
 
