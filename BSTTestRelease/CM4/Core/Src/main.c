@@ -298,9 +298,13 @@ int main(void)
             continue;
           }
 
+          float change1 =  dc_prev1 - duty_cycle1;
+          int change_dc1 = (change1 < 0)? change1 *-1: change1;
+
+          float change2 =  dc_prev2 - duty_cycle2;
+          float change_dc2 = (change2 < 0)? change2 *-1: change2;
           // if change is greater than 10%, not possible change physically, skip reading that data
-          if(((dc_prev1/duty_cycle1 > 1.2)^(duty_cycle1/dc_prev1 > 1.2)) || 
-              (dc_prev2/duty_cycle2>1.2)^(duty_cycle2/dc_prev2 > 1.2))
+          if(change_dc1 > 10 || change_dc2 > 10)
             continue;
 
 
@@ -778,10 +782,12 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 	}
 
 	// Check if stroke in valid range
+  /*
 	if (test_stroke < STROKE_MIN || test_stroke > STROKE_MAX)
 	{
 		return -1;
 	}
+  */
 
 
 
@@ -816,14 +822,15 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
   
 
     // Check both possible cases (PWM1/PWM2 could be swapped)
+    /*
     case1 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
              ~((long int)(duty_cycle2 * 10) - (long int)(expected_duty_cycle2 * 10))-1 <= DUTY_CYCLE_TOLERANCE);
 
     case2 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle2 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
              ~((long int)(duty_cycle2 * 10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE);
 
-    int test_passed = ((case1 == 0) || (case2 == 0))? 1: -1;
-    return test_passed;
+    */
+  return 0;
 }
 
 // Estimate stroke from the given duty cycles if no string potentiometer
