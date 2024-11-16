@@ -304,7 +304,7 @@ int main(void)
           float change2 =  dc_prev2 - duty_cycle2;
           float change_dc2 = (change2 < 0)? change2 *-1: change2;
           // if change is greater than 10%, not possible change physically, skip reading that data
-          if(change_dc1 > 10 || change_dc2 > 10)
+          if(change_dc1 > 50 || change_dc2 > 50)
             continue;
 
 
