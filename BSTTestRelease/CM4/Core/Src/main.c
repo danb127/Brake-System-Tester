@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2024 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -57,9 +57,9 @@ typedef struct {
 #define STROKE_MAX 9 // From graph
 #define DUTY_CYCLE_TOLERANCE 5.0f  // ±5% DC per specs
 #define SENSITIVITY 5.96f  // 5.96% DC/mm per specs
-//#define S1_OFFSET 12.5f   // PWM1 offset: 12.5% DC
-//#define S2_OFFSET 87.5f   // PWM2 offset: 87.5% DC
-// 6 test_points for each distance
+                           //#define S1_OFFSET 12.5f   // PWM1 offset: 12.5% DC
+                           //#define S2_OFFSET 87.5f   // PWM2 offset: 87.5% DC
+                           // 6 test_points for each distance
 #define MAX_DISTANCE 6
 
 #define ADC_BUFFER_SIZE     20
@@ -184,9 +184,9 @@ void evaluate_test_result(void);
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -240,14 +240,14 @@ int main(void)
   HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_2); // For PWM2 (S2)
 
   /*
-    * Create Virtual UART device
-    * defined by a rpmsg channel attached to the remote device
-    */
-   /*Need to register callback for message reception by channels*/
-   if(VIRT_UART_RegisterCallback(&huart0, VIRT_UART_RXCPLT_CB_ID, VIRT_UART0_RxCpltCallback) != VIRT_UART_OK)
-   {
+   * Create Virtual UART device
+   * defined by a rpmsg channel attached to the remote device
+   */
+  /*Need to register callback for message reception by channels*/
+  if(VIRT_UART_RegisterCallback(&huart0, VIRT_UART_RXCPLT_CB_ID, VIRT_UART0_RxCpltCallback) != VIRT_UART_OK)
+  {
     Error_Handler();
-   }
+  }
 
   // Create Virtual RPMSG file
   if(VIRT_UART_Init(&huart0) != VIRT_UART_OK) {
@@ -257,19 +257,19 @@ int main(void)
   //csv header
   printf("time(s),duty_cycle1(%%),duty_cycle2(%%),freq1(%%),freq2(%%),stroke(mm)\r\n");
   uint32_t counter = 0;
-  
+
   // keep track of previous duty cycle to see if there is a large change
   float dc_prev1 = -1;
   float dc_prev2 = -1;
 
-  
+
   for(int x = 0;x < MAX_DISTANCE;x++) {
     tests[x].passed = 0;
     tests[x].tested = 0;
   }
 
-    bst_test.tests = tests;
-    bst_test.done = 0;
+  bst_test.tests = tests;
+  bst_test.done = 0;
 
 
 
@@ -279,113 +279,113 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-      OPENAMP_check_for_message();
+    OPENAMP_check_for_message();
 
-      // if dc changes more than 10%, skip current iteration
+    // if dc changes more than 10%, skip current iteration
 
-      HAL_Delay(10);
+    HAL_Delay(10);
 
-      if(start)
+    if(start)
+    {
+      // Calculating the frequency and duty cycle for both channels
+      frequency1 = (period1 > 0) ? (((float) SystemCoreClock) / ((htim3.Init.Prescaler + 1) * period1)) : 0;
+      frequency2 = (period2 > 0) ? (((float) SystemCoreClock) / ((htim5.Init.Prescaler + 1) * period2)) : 0;
+
+      if((frequency1 > 210) || (frequency1 < 190) || (frequency2 > 210) || (frequency2) < 190)
+        continue;
+
+      duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
+      duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
+
+      float lower_duty = (duty_cycle1 > duty_cycle2)? duty_cycle2: duty_cycle1;
+      float higher_duty = (duty_cycle1>duty_cycle2)? duty_cycle1: duty_cycle2;
+
+      if((((lower_duty>16) || (lower_duty< 9)) && ((higher_duty> 91) || (higher_duty< 84))) &&
+          (dc_prev1 == -1 && dc_prev2 == -1)) {
+        continue;
+      }
+
+
+      if(dc_prev1 == -1.0f && dc_prev2 == -1.0f) {
+        dc_prev1 = duty_cycle1;
+        dc_prev2 = duty_cycle2;
+
+        s1_offset = duty_cycle1;
+        s2_offset = duty_cycle2;
+        continue;
+      }
+
+      float change1 =  dc_prev1 - duty_cycle1;
+      int change_dc1 = (change1 < 0)? change1 *-1: change1;
+
+      float change2 =  dc_prev2 - duty_cycle2;
+      float change_dc2 = (change2 < 0)? change2 *-1: change2;
+      // if change is greater than 10%, not possible change physically, skip reading that data
+      if(change_dc1 > 50 || change_dc2 > 50)
+        continue;
+
+
+      dc_prev1 = duty_cycle1;
+      dc_prev2 = duty_cycle2;
+
+      if(use_stringpot)
       {
-          // Calculating the frequency and duty cycle for both channels
-          frequency1 = (period1 > 0) ? (((float) SystemCoreClock) / ((htim3.Init.Prescaler + 1) * period1)) : 0;
-          frequency2 = (period2 > 0) ? (((float) SystemCoreClock) / ((htim5.Init.Prescaler + 1) * period2)) : 0;
+        if(new_adc_data_ready == 1)
+        {
+          new_adc_data_ready = 0;
 
-          if((frequency1 > 210) || (frequency1 < 190) || (frequency2 > 210) || (frequency2) < 190)
-            continue;
+          V_sensor = ((adc_average * V_ref) / 4095.0f) * scaling_factor;
 
-          duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
-          duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
+          int dc1 = (int)(100* duty_cycle1);
+          int dc2 = (int)(100* duty_cycle2);
+          int f1 = (int)frequency1;
+          int f2 = (int)frequency2;
+          int strk = (int)(10* stroke);
+          //        DC1.x,DC2.x,MM.x ,F1,j2
+          log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d,%02d\r\n"
+              ,dc1/100,dc1%100
+              ,dc2/100,dc2%100,
+              strk/10,strk%10,
+              f1,f2);
+          check_bst_values(stroke, duty_cycle1, duty_cycle2);
 
-          float lower_duty = (duty_cycle1 > duty_cycle2)? duty_cycle2: duty_cycle1;
-          float higher_duty = (duty_cycle1>duty_cycle2)? duty_cycle1: duty_cycle2;
-
-          if((((lower_duty>16) || (lower_duty< 9)) && ((higher_duty> 91) || (higher_duty< 84))) &&
-              (dc_prev1 == -1 && dc_prev2 == -1)) {
-            continue;
+          if(bst_test.done == MAX_DISTANCE) {
+            start = 0;
+            evaluate_test_result();
           }
-
-
-          if(dc_prev1 == -1.0f && dc_prev2 == -1.0f) {
-            dc_prev1 = duty_cycle1;
-            dc_prev2 = duty_cycle2;
-
-            s1_offset = duty_cycle1;
-            s2_offset = duty_cycle2;
-            continue;
-          }
-
-          float change1 =  dc_prev1 - duty_cycle1;
-          int change_dc1 = (change1 < 0)? change1 *-1: change1;
-
-          float change2 =  dc_prev2 - duty_cycle2;
-          float change_dc2 = (change2 < 0)? change2 *-1: change2;
-          // if change is greater than 10%, not possible change physically, skip reading that data
-          if(change_dc1 > 50 || change_dc2 > 50)
-            continue;
-
-
-          dc_prev1 = duty_cycle1;
-          dc_prev2 = duty_cycle2;
-
-          if(use_stringpot)
-          {
-              if(new_adc_data_ready == 1)
-              {
-            	   new_adc_data_ready = 0;
-
-            	   V_sensor = ((adc_average * V_ref) / 4095.0f) * scaling_factor;
-
-                   int dc1 = (int)(100* duty_cycle1);
-                   int dc2 = (int)(100* duty_cycle2);
-                   int f1 = (int)frequency1;
-                   int f2 = (int)frequency2;
-                   int strk = (int)(10* stroke);
-                   //        DC1.x,DC2.x,MM.x ,F1,j2
-                   log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d,%02d\r\n"
-                       ,dc1/100,dc1%100
-                       ,dc2/100,dc2%100,
-                       strk/10,strk%10,
-                       f1,f2);
-            	  check_bst_values(stroke, duty_cycle1, duty_cycle2);
-
-                  if(bst_test.done == MAX_DISTANCE) {
-                    start = 0;
-                    evaluate_test_result();
-                  }
-              }
-          }
-          else
-          {
-              // Not Using String Potentiometer
-              float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
-              // duty_cycle1,duty_cycle2,estimated_stroke
-              int dc1 = (int)(100* duty_cycle1);
-              int dc2 = (int)(100* duty_cycle2);
-              int f1 = (int)frequency1;
-              int f2 = (int)frequency2;
-              int strk = (int)(10* estimated_stroke);
-              //        DC1.x,DC2.x,MM.x ,F1,j2  
-              log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d,%02d\r\n"
-                  ,dc1/100,dc1%100
-                  ,dc2/100,dc2%100,
-                  strk/10,strk%10,
-                  f1,f2);
-
-              check_bst_values(estimated_stroke, duty_cycle1, duty_cycle2);
-
-              if(bst_test.done == MAX_DISTANCE) {
-                start = 0;
-                evaluate_test_result();
-
-              }
-          }
+        }
       }
+      else
+      {
+        // Not Using String Potentiometer
+        float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
+        // duty_cycle1,duty_cycle2,estimated_stroke
+        int dc1 = (int)(100* duty_cycle1);
+        int dc2 = (int)(100* duty_cycle2);
+        int f1 = (int)frequency1;
+        int f2 = (int)frequency2;
+        int strk = (int)(10* estimated_stroke);
+        //        DC1.x,DC2.x,MM.x ,F1,j2  
+        log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d,%02d\r\n"
+            ,dc1/100,dc1%100
+            ,dc2/100,dc2%100,
+            strk/10,strk%10,
+            f1,f2);
 
-      if (VirtUart0RxMsg) {
-          VirtUart0RxMsg = RESET;
-          VIRT_UART_Transmit(&huart0, VirtUart0ChannelBuffRx, VirtUart0ChannelRxSize);
+        check_bst_values(estimated_stroke, duty_cycle1, duty_cycle2);
+
+        if(bst_test.done == MAX_DISTANCE) {
+          start = 0;
+          evaluate_test_result();
+
+        }
       }
+    }
+
+    if (VirtUart0RxMsg) {
+      VirtUart0RxMsg = RESET;
+      VIRT_UART_Transmit(&huart0, VirtUart0ChannelBuffRx, VirtUart0ChannelRxSize);
+    }
 
     /* USER CODE END WHILE */
 
@@ -395,17 +395,17 @@ int main(void)
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSIDivValue = RCC_HSI_DIV1;
@@ -439,9 +439,9 @@ void SystemClock_Config(void)
   /** RCC Clock Config
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_ACLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
-                              |RCC_CLOCKTYPE_PCLK3|RCC_CLOCKTYPE_PCLK4
-                              |RCC_CLOCKTYPE_PCLK5;
+    |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
+    |RCC_CLOCKTYPE_PCLK3|RCC_CLOCKTYPE_PCLK4
+    |RCC_CLOCKTYPE_PCLK5;
   RCC_ClkInitStruct.AXISSInit.AXI_Clock = RCC_AXISSOURCE_PLL2;
   RCC_ClkInitStruct.AXISSInit.AXI_Div = RCC_AXI_DIV1;
   RCC_ClkInitStruct.MCUInit.MCU_Clock = RCC_MCUSSOURCE_PLL3;
@@ -459,9 +459,9 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief Peripherals Common Clock Configuration
-  * @retval None
-  */
+ * @brief Peripherals Common Clock Configuration
+ * @retval None
+ */
 void PeriphCommonClock_Config(void)
 {
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
@@ -477,10 +477,10 @@ void PeriphCommonClock_Config(void)
 }
 
 /**
-  * @brief ADC1 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief ADC1 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_ADC1_Init(void)
 {
 
@@ -544,10 +544,10 @@ static void MX_ADC1_Init(void)
 }
 
 /**
-  * @brief IPCC Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief IPCC Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_IPCC_Init(void)
 {
 
@@ -570,10 +570,10 @@ static void MX_IPCC_Init(void)
 }
 
 /**
-  * @brief TIM3 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief TIM3 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_TIM3_Init(void)
 {
 
@@ -618,10 +618,10 @@ static void MX_TIM3_Init(void)
 }
 
 /**
-  * @brief TIM4 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief TIM4 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_TIM4_Init(void)
 {
 
@@ -663,10 +663,10 @@ static void MX_TIM4_Init(void)
 }
 
 /**
-  * @brief TIM5 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief TIM5 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_TIM5_Init(void)
 {
 
@@ -711,8 +711,8 @@ static void MX_TIM5_Init(void)
 }
 
 /**
-  * Enable DMA controller clock
-  */
+ * Enable DMA controller clock
+ */
 static void MX_DMA_Init(void)
 {
 
@@ -728,10 +728,10 @@ static void MX_DMA_Init(void)
 }
 
 /**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief GPIO Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_GPIO_Init(void)
 {
 
@@ -747,22 +747,22 @@ static void MX_GPIO_Init(void)
 void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
 {
 
-	const char* server_message = (char*) huart->pRxBuffPtr;
+  const char* server_message = (char*) huart->pRxBuffPtr;
   const size_t server_message_len = huart->RxXferSize;
-	char response_buffer[64] = "ERROR\n";
+  char response_buffer[64] = "ERROR\n";
 
-	if (strncmp(server_message,"hello\n",server_message_len) == 0)
-	{
-		char response[] = "BST Test Acknowledged\n";
+  if (strncmp(server_message,"hello\n",server_message_len) == 0)
+  {
+    char response[] = "BST Test Acknowledged\n";
     strcpy(response_buffer,response);
-	}
+  }
   // start test once string potentiometer is used or not
-	else if(strncmp(server_message,"no\n",server_message_len) == 0)
-	{
-		char response[] = "Testing with no String Potentiometer\n";
+  else if(strncmp(server_message,"no\n",server_message_len) == 0)
+  {
+    char response[] = "Testing with no String Potentiometer\n";
     strcpy(response_buffer,response);
     start = 1;
-	}
+  }
   else if(strncmp(server_message,"yes\n",server_message_len) == 0)
   {
     char response[] = "Testing with String Potentiometer\n";
@@ -783,13 +783,13 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
   }
 
 
-    /* Copy received message into buffer */
-    // Limit the size of the received message to the maximum buffer size or the size of the message
-    VirtUart0ChannelRxSize = strlen(response_buffer) < MAX_BUFFER_SIZE ? strlen(response_buffer) : MAX_BUFFER_SIZE - 1;
-    // Copy the received message into the buffer
-    memcpy(VirtUart0ChannelBuffRx, response_buffer, VirtUart0ChannelRxSize);
-    // Set the flag to indicate that a message has been received
-    VirtUart0RxMsg = SET;
+  /* Copy received message into buffer */
+  // Limit the size of the received message to the maximum buffer size or the size of the message
+  VirtUart0ChannelRxSize = strlen(response_buffer) < MAX_BUFFER_SIZE ? strlen(response_buffer) : MAX_BUFFER_SIZE - 1;
+  // Copy the received message into the buffer
+  memcpy(VirtUart0ChannelBuffRx, response_buffer, VirtUart0ChannelRxSize);
+  // Set the flag to indicate that a message has been received
+  VirtUart0RxMsg = SET;
 }
 
 
@@ -799,41 +799,30 @@ void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
 
 int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle2)
 
-//uint8_t check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
+  //uint8_t check_bst_values(float stroke, float duty_cycle1, float duty_cycle2)
 
 {
-	float test_stroke;
+  float test_stroke = estimated_stroke;
 
-	// Determining which stroke value based on string pot usage
-	if(use_stringpot)
-	{
-		test_stroke = stroke;
-	}
-	else
-	{
-		// Estimated stroke if no string pot
-		test_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
-	}
-
-	// Check if stroke in valid range
+  // Check if stroke in valid range
   /*
-	if (test_stroke < STROKE_MIN || test_stroke > STROKE_MAX)
-	{
-		return -1;
-	}
-  */
+     if (test_stroke < STROKE_MIN || test_stroke > STROKE_MAX)
+     {
+     return -1;
+     }
+     */
 
 
 
-	//Calculate expected duty cycles for stroke
-	expected_duty_cycle1 = s1_offset+ (test_stroke * SENSITIVITY);
-	expected_duty_cycle2 = s2_offset- (test_stroke * SENSITIVITY);
+  //Calculate expected duty cycles for stroke
+  expected_duty_cycle1 = s1_offset+ (test_stroke * SENSITIVITY);
+  expected_duty_cycle2 = s2_offset- (test_stroke * SENSITIVITY);
 
-    float upperdc = (duty_cycle1 > duty_cycle2)? duty_cycle1:duty_cycle2;
-    float lowerdc= (duty_cycle1 > duty_cycle2)? duty_cycle2:duty_cycle1;
+  float upperdc = (duty_cycle1 > duty_cycle2)? duty_cycle1:duty_cycle2;
+  float lowerdc= (duty_cycle1 > duty_cycle2)? duty_cycle2:duty_cycle1;
 
-    float expected_upperdc = (expected_duty_cycle1 > expected_duty_cycle2)? expected_duty_cycle1:expected_duty_cycle2;
-    float expected_lowerdc = (expected_duty_cycle1 > expected_duty_cycle2)? expected_duty_cycle2:expected_duty_cycle1;
+  float expected_upperdc = (expected_duty_cycle1 > expected_duty_cycle2)? expected_duty_cycle1:expected_duty_cycle2;
+  float expected_lowerdc = (expected_duty_cycle1 > expected_duty_cycle2)? expected_duty_cycle2:expected_duty_cycle1;
 
   // is measured DC within 5 of the expected
   // eg. measured = 12% expected = 20%, should fail 
@@ -848,42 +837,42 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
 
     // one of them failed
     if(upper_diff > 5 || lower_diff > 5) {
-     bst_test.tests[(int)test_stroke].passed = -1;
+      bst_test.tests[(int)test_stroke].passed = -1;
     }
-     bst_test.done++;
+    bst_test.done++;
   }
 
-  
 
-    // Check both possible cases (PWM1/PWM2 could be swapped)
-    /*
-    case1 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
-             ~((long int)(duty_cycle2 * 10) - (long int)(expected_duty_cycle2 * 10))-1 <= DUTY_CYCLE_TOLERANCE);
 
-    case2 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle2 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
-             ~((long int)(duty_cycle2 * 10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE);
+  // Check both possible cases (PWM1/PWM2 could be swapped)
+  /*
+     case1 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
+     ~((long int)(duty_cycle2 * 10) - (long int)(expected_duty_cycle2 * 10))-1 <= DUTY_CYCLE_TOLERANCE);
 
-    */
+     case2 = (~((long int)(duty_cycle1 *10) - (long int)(expected_duty_cycle2 * 10))-1 <= DUTY_CYCLE_TOLERANCE &&
+     ~((long int)(duty_cycle2 * 10) - (long int)(expected_duty_cycle1 * 10))-1 <= DUTY_CYCLE_TOLERANCE);
+
+*/
   return 0;
 }
 
 // Estimate stroke from the given duty cycles if no string potentiometer
 float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 {
-	// Sort duty cycles to identify which is PWM1
-	float lower_duty = (duty_cycle1 > duty_cycle2)? duty_cycle2: duty_cycle1;
-	float higher_duty = (duty_cycle1>duty_cycle2)? duty_cycle1: duty_cycle2;
+  // Sort duty cycles to identify which is PWM1
+  float lower_duty = (duty_cycle1 > duty_cycle2)? duty_cycle2: duty_cycle1;
+  float higher_duty = (duty_cycle1>duty_cycle2)? duty_cycle1: duty_cycle2;
 
-	//Calculate stroke using 5.96% DC/mm sensitivity
-	float stroke_from_lower = ((lower_duty - s1_offset) / SENSITIVITY);
-	float stroke_from_higher = ((s2_offset- higher_duty) / SENSITIVITY);
-  
+  //Calculate stroke using 5.96% DC/mm sensitivity
+  float stroke_from_lower = ((lower_duty - s1_offset) / SENSITIVITY);
+  float stroke_from_higher = ((s2_offset- higher_duty) / SENSITIVITY);
+
   // error margin is 3.5%
 
-	// Average the two estimates
-	estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2;
+  // Average the two estimates
+  estimated_stroke = (stroke_from_lower + stroke_from_higher) / 2;
 
-	return estimated_stroke;
+  return estimated_stroke;
 }
 
 void evaluate_test_result(void) {
@@ -898,43 +887,43 @@ void evaluate_test_result(void) {
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-    static int sum = 0;
-    static int count = 0;
+  static int sum = 0;
+  static int count = 0;
 
-    for(int i = ADC_BUFFER_SIZE/2; i < ADC_BUFFER_SIZE; i++) {
-        sum += adc_buffer[i];
-        count++;
+  for(int i = ADC_BUFFER_SIZE/2; i < ADC_BUFFER_SIZE; i++) {
+    sum += adc_buffer[i];
+    count++;
 
-        if(count >= ADC_BUFFER_SIZE) {
-            adc_average = sum / ADC_BUFFER_SIZE;
+    if(count >= ADC_BUFFER_SIZE) {
+      adc_average = sum / ADC_BUFFER_SIZE;
 
-            sum = 0;
-            count = 0;
-        }
-        new_adc_data_ready = 1;
+      sum = 0;
+      count = 0;
     }
+    new_adc_data_ready = 1;
+  }
 
 }
 
 // Half transfer callback
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
 {
-    static int sum = 0;
-    static int count = 0;
+  static int sum = 0;
+  static int count = 0;
 
-    for(int i = 0; i < ADC_BUFFER_SIZE/2; i++) {
-        sum += adc_buffer[i];
-        count++;
+  for(int i = 0; i < ADC_BUFFER_SIZE/2; i++) {
+    sum += adc_buffer[i];
+    count++;
 
-        if(count >= ADC_BUFFER_SIZE) {
-            adc_average = sum / ADC_BUFFER_SIZE;
+    if(count >= ADC_BUFFER_SIZE) {
+      adc_average = sum / ADC_BUFFER_SIZE;
 
-            sum = 0;
-            count = 0;
-        }
-
-        new_adc_data_ready = 1;
+      sum = 0;
+      count = 0;
     }
+
+    new_adc_data_ready = 1;
+  }
 
 }
 
@@ -942,9 +931,9 @@ void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -958,17 +947,17 @@ void Error_Handler(void)
 
 #ifdef  USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
