@@ -32,6 +32,15 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
+typedef struct {
+  uint8_t passed;
+  uint8_t tested;
+}test_point;
+
+typedef struct {
+  size_t done;
+  test_point* tests;
+}BST_Test;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -50,6 +59,11 @@
 #define SENSITIVITY 5.96f  // 5.96% DC/mm per specs
 //#define S1_OFFSET 12.5f   // PWM1 offset: 12.5% DC
 //#define S2_OFFSET 87.5f   // PWM2 offset: 87.5% DC
+// 6 test_points for each distance
+#define MAX_DISTANCE 6
+
+#define ADC_BUFFER_SIZE     20
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -57,7 +71,7 @@
 
 /* USER CODE END PM */
 
-/* Private variables ---------------------------------------------------------*/
+/* Private variables -----#define ADC_BUFFER_SIZE     20----------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 DMA_HandleTypeDef hdma_adc1;
 
@@ -88,6 +102,20 @@ volatile float stroke = 0;
 volatile float expected_duty_cycle1 = 0;
 volatile float expected_duty_cycle2 = 0;
 
+// ADC DMA Buffer
+volatile uint32_t adc_buffer[ADC_BUFFER_SIZE];
+
+// ADC Parameters
+volatile float V_sensor = 0.0f;
+const float V_ref = 3.146f;
+const float scaling_factor = (8.5f + 3.3f) / 3.3f;
+const float V_sensor_max = 10.0f;
+const float V_sensor_min = 0.0f;
+const float stroke_max = 9.1f;
+
+volatile int new_adc_data_ready = 0;
+float adc_average = 0;
+
 float s1_offset;
 float s2_offset;
 
@@ -96,6 +124,11 @@ int case1 = 0;
 int case2 = 0;
 
 uint8_t use_stringpot = 0;
+
+test_point tests[MAX_DISTANCE];
+
+
+BST_Test bst_test;
 
 // Flag to indicate that a message has been received from the A7 core
 __IO FlagStatus VirtUart0RxMsg = RESET;
@@ -128,28 +161,12 @@ int check_bst_values(float stroke, float duty_cycle1, float duty_cycle2);
 // Function to calculate estimated stroke if no string potentiometer is selected
 float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2);
 
-// Function to read stroke from ADC
-float read_stroke_from_adc(void);
+// Functions to read stroke from ADC
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc);
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc);
 
-// evauluate if test cases passed or not, a single fail causes it to fail
+// evaluate if test cases passed or not, a single fail causes it to fail
 void evaluate_test_result(void);
-
-typedef struct {
-  uint8_t passed;
-  uint8_t tested;
-}test_point;
-
-// 6 test_points for each distance
-#define MAX_DISTANCE 6
-test_point tests[MAX_DISTANCE];
-
-typedef struct {
-  size_t done;
-  test_point* tests;
-}BST_Test;
-
-
-BST_Test bst_test;
 
 
 
@@ -313,15 +330,30 @@ int main(void)
 
           if(use_stringpot)
           {
-              // Using String Potentiometer
-              stroke = read_stroke_from_adc();
-              // duty_cycle1,duty_cycle2,stroke
-              int dc1 = (int)duty_cycle1;
-              int dc2 = (int)duty_cycle2;
-              int strk = (int)stroke * 10;
-              log_info("%d,%d,%d\r\n",dc1,dc2,strk);
-              result = check_bst_values(stroke, duty_cycle1, duty_cycle2);
-          }
+              if (new_adc_data_ready = 1)
+              {
+            	  new_adc_data_ready = 0;
+
+            	   V_sensor = ((adc_average * V_ref) / 4095.0f) * scaling_factor;
+
+                   int dc1 = (int)(100* duty_cycle1);
+                   int dc2 = (int)(100* duty_cycle2);
+                   int f1 = (int)frequency1;
+                   int f2 = (int)frequency2;
+                   int strk = (int)(10* stroke);
+                   //        DC1.x,DC2.x,MM.x ,F1,j2
+                   log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d,%02d\r\n"
+                       ,dc1/100,dc1%100
+                       ,dc2/100,dc2%100,
+                       strk/10,strk%10,
+                       f1,f2);
+            	  check_bst_values(stroke, duty_cycle1, duty_cycle2);
+
+                  if(bst_test.done == MAX_DISTANCE) {
+                    start = 0;
+                    evaluate_test_result();
+                  }
+              }
           else
           {
               // Not Using String Potentiometer
@@ -339,10 +371,11 @@ int main(void)
                   strk/10,strk%10,
                   f1,f2);
 
-              check_bst_values(0, duty_cycle1, duty_cycle2);
+              check_bst_values(estimated_stroke, duty_cycle1, duty_cycle2);
 
-              if(bst_test.done == 6) {
-                start = 1;
+              if(bst_test.done == MAX_DISTANCE) {
+                start = 0;
+                evaluate_test_result();
 
               }
           }
@@ -852,8 +885,7 @@ float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
 	return estimated_stroke;
 }
 
-void
-evaluate_test_result(void) {
+void evaluate_test_result(void) {
   // default result is passing
   result = 1;
   for(int x = 0; x < MAX_DISTANCE; ++x) {
@@ -863,50 +895,48 @@ evaluate_test_result(void) {
   }
 }
 
-
-float read_stroke_from_adc(void)
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-	// Start ADC conversion
-	HAL_ADC_Start(&hadc1);
-	// Wait for conversion to complete
-	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-	// Get ADC value
-	uint32_t adc_value = HAL_ADC_GetValue(&hadc1);
-	// Stop ADC
-	HAL_ADC_Stop(&hadc1);
+    static int sum = 0;
+    static int count = 0;
 
-	// ADC parameters
+    for(int i = ADC_BUFFER_SIZE/2; i < ADC_BUFFER_SIZE; i++) {
+        sum += adc_buffer[i];
+        count++;
 
-	// For 12-bit ADC res
-	uint32_t ADC_max_value = 4095;
+        if(count >= ADC_BUFFER_SIZE) {
+            adc_average = sum / ADC_BUFFER_SIZE;
 
-	// Reference voltage
-	float V_ref = 3.3f;
-
-	// Maximum Sensor Voltage
-	float V_sensor_max = 10.0f;
-
-	float V_sensor_min = 0.0f; // Adjust this value as needed
-
-	// Maximum Stroke in mm
-	float Stroke_max = 1270.0f;
-
-	// Voltage divider scaling factor
-	float scaling_factor = (8.5f + 3.3f) / 3.3f; //(R1 + R2) / R2
-
-	// Calculating ADC input
-	float V_adc = ((float)adc_value / (float)ADC_max_value) * V_ref;
-
-	// Calculating acutal sensor voltage before voltage divider
-	float V_sensor = V_adc * scaling_factor;
-
-
-    // Calculate stroke in mm
-    float stroke = ((V_sensor - V_sensor_min) / (V_sensor_max - V_sensor_min)) * Stroke_max;
-
-    return stroke;
+            sum = 0;
+            count = 0;
+        }
+        new_adc_data_ready = 1;
+    }
 
 }
+
+// Half transfer callback
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
+{
+    static int sum = 0;
+    static int count = 0;
+
+    for(int i = 0; i < ADC_BUFFER_SIZE/2; i++) {
+        sum += adc_buffer[i];
+        count++;
+
+        if(count >= ADC_BUFFER_SIZE) {
+            adc_average = sum / ADC_BUFFER_SIZE;
+
+            sum = 0;
+            count = 0;
+        }
+
+        new_adc_data_ready = 1;
+    }
+
+}
+
 
 /* USER CODE END 4 */
 

@@ -6,8 +6,9 @@
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
-		<item key="selection" value="f1"/>
+		<item key="selection" value="test_stroke"/>
 		<list key="findhistory">
+			<item value="test_stroke"/>
 			<item value="f1"/>
 			<item value="50000"/>
 			<item value="tim5"/>

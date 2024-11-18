@@ -32,7 +32,10 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef struct {
+  uint8_t passed;
+  uint8_t tested;
+}test_point;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -77,6 +80,7 @@ int cws_test_active = 0;
 float wear = 0.0f;
 volatile float V_sensor = 0.0f;
 volatile int test_status = 0; // 0= fail, 1 = pass
+int test_passed = 0;
 
 // ADC DMA Buffer
 volatile uint32_t adc_buffer[ADC_BUFFER_SIZE];
@@ -346,7 +350,10 @@ static void MX_IPCC_Init(void)
   /* USER CODE BEGIN IPCC_Init 2 */
 
   /* USER CODE END IPCC_Init 2 */
+  est_point tests[MAX_DISTANCE];
 
+
+  BST_Test bst_test;
 }
 
 /**
@@ -459,18 +466,19 @@ float get_expected_wear(float voltage)
     //if(voltage < VOLTAGE_MIN) voltage = VOLTAGE_MIN;
     //if(voltage > VOLTAGE_MAX) voltage = VOLTAGE_MAX;
 
-    // wear = wear_min + (v - v_min)/(v_max - v_min) * wear_range
+    //wear = wear_min + (v - v_min)/(v_max - v_min) * wear_range
     return WEAR_MIN + ((voltage - VOLTAGE_MIN) / VOLTAGE_RANGE) * WEAR_RANGE;
 }
 
 int test_cws_functionality(float voltage, float wear) {
     // First check special points with their specific tolerances
-    if(fabsf(voltage - 0.7f) <= 0.07f) {  // New pad condition
+	// If the absolute value of the output voltage is less than or equal to 0.07 it is in new condition
+    if(fabsf(voltage - 0.7f) <= 0.07f || fabsf(voltage - 3.5f) <= 0.035f) {  // New pad condition
         return fabsf(wear - 18.5f) <= 0.5f;
     }
-    else if(fabsf(voltage - 3.5f) <= 0.035f) {  // Wear limit
-        return fabsf(wear - 53.5f) <= 0.5f;
-    }
+    //else if(fabsf(voltage - 3.5f) <= 0.035f) {  // Wear limit
+      //  return fabsf(wear - 53.5f) <= 0.5f;
+    //}
     else if(voltage >= 3.8f && voltage <= 4.2f) {  // Worn out condition
         return fabsf(wear - 54.0f) <= 1.0f;
     }
@@ -480,7 +488,7 @@ int test_cws_functionality(float voltage, float wear) {
     return fabsf(wear - expected_wear) <= 0.5f;
 }
 
-// Modify your ADC callbacks to include wear calculation:
+
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
     static int sum = 0;
