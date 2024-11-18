@@ -60,7 +60,7 @@ typedef struct {
                            //#define S1_OFFSET 12.5f   // PWM1 offset: 12.5% DC
                            //#define S2_OFFSET 87.5f   // PWM2 offset: 87.5% DC
                            // 6 test_points for each distance
-#define MAX_DISTANCE 6
+#define MAX_DISTANCE 6 + 1 // 1 for array offset
 
 #define ADC_BUFFER_SIZE     20
 
@@ -271,6 +271,8 @@ int main(void)
   bst_test.tests = tests;
   bst_test.done = 0;
 
+  size_t wrong_counter = 0;
+
 
 
   /* USER CODE END 2 */
@@ -291,11 +293,15 @@ int main(void)
       frequency1 = (period1 > 0) ? (((float) SystemCoreClock) / ((htim3.Init.Prescaler + 1) * period1)) : 0;
       frequency2 = (period2 > 0) ? (((float) SystemCoreClock) / ((htim5.Init.Prescaler + 1) * period2)) : 0;
 
+
       if((frequency1 > 210) || (frequency1 < 190) || (frequency2 > 210) || (frequency2) < 190)
         continue;
 
       duty_cycle1 = (period1 > 0) ? (pulse_width1 / period1) * 100.0f : 0;
       duty_cycle2 = (period2 > 0) ? (pulse_width2 / period2) * 100.0f : 0;
+
+      if(duty_cycle1 > 99.9 || duty_cycle2 > 99.9)
+        continue;
 
       float lower_duty = (duty_cycle1 > duty_cycle2)? duty_cycle2: duty_cycle1;
       float higher_duty = (duty_cycle1>duty_cycle2)? duty_cycle1: duty_cycle2;
@@ -827,7 +833,7 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
   // is measured DC within 5 of the expected
   // eg. measured = 12% expected = 20%, should fail 
   // distance away from 20 is greater than 5
-  //
+
   if(bst_test.tests[(int)test_stroke].tested == 0) {
     bst_test.tests[(int)test_stroke].tested = 1;
 
@@ -839,6 +845,7 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
     if(upper_diff > 5 || lower_diff > 5) {
       bst_test.tests[(int)test_stroke].passed = -1;
     }
+
     bst_test.done++;
   }
 
