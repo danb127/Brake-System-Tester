@@ -1,10 +1,7 @@
-17:03:21 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
+17:09:52 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 ../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:333:18: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
-  333 |               if(new_adc_data_ready = 1)
-      |                  ^~~~~~~~~~~~~~~~~~
 ../Core/Src/main.c:259:12: warning: unused variable 'counter' [-Wunused-variable]
   259 |   uint32_t counter = 0;
       |            ^~~~~~~
@@ -25,7 +22,7 @@ Finished building target: BSTTestRelease_CM4.elf
 arm-none-eabi-size  BSTTestRelease_CM4.elf 
 arm-none-eabi-objdump -h -S BSTTestRelease_CM4.elf  > "BSTTestRelease_CM4.list"
    text	   data	    bss	    dec	    hex	filename
-  59072	    292	  68920	 128284	  1f51c	BSTTestRelease_CM4.elf
+  59492	    288	  68916	 128696	  1f6b8	BSTTestRelease_CM4.elf
 Finished building: default.size.stdout
  
 Finished building: BSTTestRelease_CM4.list
