@@ -330,9 +330,9 @@ int main(void)
 
           if(use_stringpot)
           {
-              if (new_adc_data_ready = 1)
+              if(new_adc_data_ready = 1)
               {
-            	  new_adc_data_ready = 0;
+            	   new_adc_data_ready = 0;
 
             	   V_sensor = ((adc_average * V_ref) / 4095.0f) * scaling_factor;
 
@@ -389,6 +389,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+  }
   }
   /* USER CODE END 3 */
 }

@@ -1,118 +1,32 @@
-16:57:45 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
+17:03:21 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 ../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:333:19: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
-  333 |               if (new_adc_data_ready = 1)
-      |                   ^~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:483:13: error: invalid storage class for function 'MX_ADC1_Init'
-  483 | static void MX_ADC1_Init(void)
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:550:13: error: invalid storage class for function 'MX_IPCC_Init'
-  550 | static void MX_IPCC_Init(void)
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:576:13: error: invalid storage class for function 'MX_TIM3_Init'
-  576 | static void MX_TIM3_Init(void)
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:624:13: error: invalid storage class for function 'MX_TIM4_Init'
-  624 | static void MX_TIM4_Init(void)
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:669:13: error: invalid storage class for function 'MX_TIM5_Init'
-  669 | static void MX_TIM5_Init(void)
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:715:13: error: invalid storage class for function 'MX_DMA_Init'
-  715 | static void MX_DMA_Init(void)
-      |             ^~~~~~~~~~~
-../Core/Src/main.c:734:13: error: invalid storage class for function 'MX_GPIO_Init'
-  734 | static void MX_GPIO_Init(void)
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c: In function 'VIRT_UART0_RxCpltCallback':
-../Core/Src/main.c:768:12: warning: passing argument 1 to 'restrict'-qualified parameter aliases with argument 2 [-Wrestrict]
-  768 |     strcpy(response_buffer,response_buffer);
-      |            ^~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~
-../Core/Src/main.c:767:10: warning: unused variable 'response' [-Wunused-variable]
-  767 |     char response[] = "Testing with String Potentiometer\n";
-      |          ^~~~~~~~
-../Core/Src/main.c: In function 'check_bst_values':
-../Core/Src/main.c:841:6: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
-  841 |   if(bst_test.tests[(int)test_stroke].tested = 0) {
-      |      ^~~~~~~~
-../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:956:1: error: expected declaration or statement at end of input
-  956 | }
-      | ^
+../Core/Src/main.c:333:18: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+  333 |               if(new_adc_data_ready = 1)
+      |                  ^~~~~~~~~~~~~~~~~~
 ../Core/Src/main.c:259:12: warning: unused variable 'counter' [-Wunused-variable]
   259 |   uint32_t counter = 0;
       |            ^~~~~~~
-../Core/Src/main.c: At top level:
-../Core/Src/main.c:146:13: warning: 'MX_DMA_Init' used but never defined
-  146 | static void MX_DMA_Init(void);
-      |             ^~~~~~~~~~~
-../Core/Src/main.c:147:13: warning: 'MX_GPIO_Init' used but never defined
-  147 | static void MX_GPIO_Init(void);
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:148:13: warning: 'MX_ADC1_Init' used but never defined
-  148 | static void MX_ADC1_Init(void);
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:149:13: warning: 'MX_TIM3_Init' used but never defined
-  149 | static void MX_TIM3_Init(void);
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:150:13: warning: 'MX_TIM5_Init' used but never defined
-  150 | static void MX_TIM5_Init(void);
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:151:13: warning: 'MX_TIM4_Init' used but never defined
-  151 | static void MX_TIM4_Init(void);
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:152:13: warning: 'MX_IPCC_Init' used but never defined
-  152 | static void MX_IPCC_Init(void);
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:947:6: warning: 'Error_Handler' defined but not used [-Wunused-function]
-  947 | void Error_Handler(void)
-      |      ^~~~~~~~~~~~~
-../Core/Src/main.c:919:6: warning: 'HAL_ADC_ConvHalfCpltCallback' defined but not used [-Wunused-function]
-  919 | void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
-      |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:898:6: warning: 'HAL_ADC_ConvCpltCallback' defined but not used [-Wunused-function]
-  898 | void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-      |      ^~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:888:6: warning: 'evaluate_test_result' defined but not used [-Wunused-function]
-  888 | void evaluate_test_result(void) {
-      |      ^~~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:870:7: warning: 'estimated_stroke_from_duty_cycles' defined but not used [-Wunused-function]
-  870 | float estimated_stroke_from_duty_cycles(float duty_cycle1, float duty_cycle2)
-      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:799:5: warning: 'check_bst_values' defined but not used [-Wunused-function]
-  799 | int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle2)
-      |     ^~~~~~~~~~~~~~~~
-../Core/Src/main.c:746:6: warning: 'VIRT_UART0_RxCpltCallback' defined but not used [-Wunused-function]
-  746 | void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
-      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:734:13: warning: 'MX_GPIO_Init' defined but not used [-Wunused-function]
-  734 | static void MX_GPIO_Init(void)
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:715:13: warning: 'MX_DMA_Init' defined but not used [-Wunused-function]
-  715 | static void MX_DMA_Init(void)
-      |             ^~~~~~~~~~~
-../Core/Src/main.c:669:13: warning: 'MX_TIM5_Init' defined but not used [-Wunused-function]
-  669 | static void MX_TIM5_Init(void)
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:624:13: warning: 'MX_TIM4_Init' defined but not used [-Wunused-function]
-  624 | static void MX_TIM4_Init(void)
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:576:13: warning: 'MX_TIM3_Init' defined but not used [-Wunused-function]
-  576 | static void MX_TIM3_Init(void)
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:550:13: warning: 'MX_IPCC_Init' defined but not used [-Wunused-function]
-  550 | static void MX_IPCC_Init(void)
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:483:13: warning: 'MX_ADC1_Init' defined but not used [-Wunused-function]
-  483 | static void MX_ADC1_Init(void)
-      |             ^~~~~~~~~~~~
-../Core/Src/main.c:464:6: warning: 'PeriphCommonClock_Config' defined but not used [-Wunused-function]
-  464 | void PeriphCommonClock_Config(void)
-      |      ^~~~~~~~~~~~~~~~~~~~~~~~
-../Core/Src/main.c:400:6: warning: 'SystemClock_Config' defined but not used [-Wunused-function]
-  400 | void SystemClock_Config(void)
-      |      ^~~~~~~~~~~~~~~~~~
-make: *** [Core/Src/subdir.mk:31: Core/Src/main.o] Error 1
-"make -j8 all" terminated with exit code 2. Build might be incomplete.
+../Core/Src/main.c: In function 'VIRT_UART0_RxCpltCallback':
+../Core/Src/main.c:769:12: warning: passing argument 1 to 'restrict'-qualified parameter aliases with argument 2 [-Wrestrict]
+  769 |     strcpy(response_buffer,response_buffer);
+      |            ^~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~
+../Core/Src/main.c:768:10: warning: unused variable 'response' [-Wunused-variable]
+  768 |     char response[] = "Testing with String Potentiometer\n";
+      |          ^~~~~~~~
+../Core/Src/main.c: In function 'check_bst_values':
+../Core/Src/main.c:842:6: warning: suggest parentheses around assignment used as truth value [-Wparentheses]
+  842 |   if(bst_test.tests[(int)test_stroke].tested = 0) {
+      |      ^~~~~~~~
+arm-none-eabi-gcc -o "BSTTestRelease_CM4.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/danb127/Brake-System-Tester/BSTTestRelease/CM4/STM32MP157FACX_RAM.ld" --specs=nosys.specs -Wl,-Map="BSTTestRelease_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: BSTTestRelease_CM4.elf
+ 
+arm-none-eabi-size  BSTTestRelease_CM4.elf 
+arm-none-eabi-objdump -h -S BSTTestRelease_CM4.elf  > "BSTTestRelease_CM4.list"
+   text	   data	    bss	    dec	    hex	filename
+  59072	    292	  68920	 128284	  1f51c	BSTTestRelease_CM4.elf
+Finished building: default.size.stdout
+ 
+Finished building: BSTTestRelease_CM4.list
+ 
