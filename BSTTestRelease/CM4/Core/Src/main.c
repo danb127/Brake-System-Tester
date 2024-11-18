@@ -839,7 +839,7 @@ int check_bst_values(float estimated_stroke, float duty_cycle1, float duty_cycle
   // eg. measured = 12% expected = 20%, should fail 
   // distance away from 20 is greater than 5
   //
-  if(bst_test.tests[(int)test_stroke].tested = 0) {
+  if(bst_test.tests[(int)test_stroke].tested == 0) {
     bst_test.tests[(int)test_stroke].tested = 1;
 
     // multiply result of number by -1 if less than 0 
