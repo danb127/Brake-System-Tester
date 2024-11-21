@@ -239,6 +239,18 @@ int main(void)
   // Start Timer 5 Channel 2 for PWM Output 2
   HAL_TIM_IC_Start_IT(&htim5, TIM_CHANNEL_2); // For PWM2 (S2)
 
+
+  if (HAL_ADCEx_Calibration_Start(&hadc1, ADC_CALIB_OFFSET_LINEARITY, ADC_SINGLE_ENDED) != HAL_OK)
+   {
+       Error_Handler();
+   }
+
+  // Start conversion with DMA
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buffer, ADC_BUFFER_SIZE);
+
+  // Start timer to trigger ADC
+  HAL_TIM_Base_Start(&htim4);
+
   /*
    * Create Virtual UART device
    * defined by a rpmsg channel attached to the remote device

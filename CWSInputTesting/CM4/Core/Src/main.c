@@ -36,6 +36,11 @@ typedef struct {
   uint8_t passed;
   uint8_t tested;
 }test_point;
+
+typedef struct {
+  size_t done;
+  test_point* tests;
+}CWS_Test;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -43,18 +48,18 @@ typedef struct {
 #define MAX_BUFFER_SIZE RPMSG_BUFFER_SIZE
 #define LOGLEVEL LOGINFO
 #define __LOG_UART_IO_
-#define ADC_BUFFER_SIZE     20
+`
 #define VOLTAGE_DIVIDER_RATIO 2.0f  // 3k/3k divider
 
 // CWS specifications
 #define VOLTAGE_MIN 0.7f      // Minimum voltage at 18.5mm (new pad)
-#define VOLTAGE_MAX 4.0f      // Maximum voltage at wear out
-#define VOLTAGE_RANGE 3.3f    // VOLTAGE_MAX - VOLTAGE_MIN
+#define VOLTAGE_MAX 3.5f      // Maximum voltage for linear voltage scaling range
+#define VOLTAGE_RANGE 2.8f    // VOLTAGE_MAX - VOLTAGE_MIN
 #define WEAR_MIN 18.5f        // Minimum wear (new pad)
 #define WEAR_MAX 53.5f        // Maximum wear (wear limit)
 #define WEAR_RANGE 35.0f      // WEAR_MAX - WEAR_MIN
+#define MAX_POINTS 7          // 5mm per test point (35mm / 7)
 /* USER CODE END PD */
-
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
@@ -88,6 +93,11 @@ volatile uint32_t adc_buffer[ADC_BUFFER_SIZE];
 // ADC Parameters
 const float V_ref = 3.146f;
 const float divider_factor = 2.0f;
+
+// Test Variables
+test_point tests[WEAR_MIN];
+
+CWS_Test cws_test;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -187,6 +197,21 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  // Not Using String Potentiometer
+	  float estimated_stroke = estimated_stroke_from_duty_cycles(duty_cycle1, duty_cycle2);
+	  // duty_cycle1,duty_cycle2,estimated_stroke
+	  int w = (int)(100* wear);
+	  int v = (int)(100* V_sensor);
+	  //        Wear x Voltage Output
+	  log_info("%02d.%02d\r\n",w,v);
+
+	  test_cws_functionality(V_sensor, wear);
+
+	  if(cws_test.done == MAX_DISTANCE) {
+		start = 0;
+		evaluate_test_result();
+
+	  }
   }
   /* USER CODE END 3 */
 }
@@ -471,21 +496,40 @@ float get_expected_wear(float voltage)
 }
 
 int test_cws_functionality(float voltage, float wear) {
-    // First check special points with their specific tolerances
-	// If the absolute value of the output voltage is less than or equal to 0.07 it is in new condition
-    if(fabsf(voltage - 0.7f) <= 0.07f || fabsf(voltage - 3.5f) <= 0.035f) {  // New pad condition
-        return fabsf(wear - 18.5f) <= 0.5f;
+    int test_passed = 1; // Assuming test passes initially
+
+	// Checking for internal sensor failure or loss of GND
+    if(voltage < 0.5f || voltage > 4.5f){
+    	test_passed = -1;
     }
-    //else if(fabsf(voltage - 3.5f) <= 0.035f) {  // Wear limit
-      //  return fabsf(wear - 53.5f) <= 0.5f;
-    //}
-    else if(voltage >= 3.8f && voltage <= 4.2f) {  // Worn out condition
-        return fabsf(wear - 54.0f) <= 1.0f;
+    else if (voltage >= 0.7f && voltage <= 4.2f){
+    	float expected_wear = get_expected_wear(voltage);
+    	if (fabsf(wear - expected_wear) > 0.5f){
+    		test_passed = -1; // signaling fail
+    	}
+    }
+    else{
+    	test_passed = -1; // fail
     }
 
-    // For intermediate points, use linear interpolation with 0.5mm tolerance
-    float expected_wear = get_expected_wear(voltage);
-    return fabsf(wear - expected_wear) <= 0.5f;
+    // Update test_point
+	float wear_percentage = (wear - WEAR_MIN) / WEAR_RANGE;
+	int wear_index = (int)(wear_percentage * (MAX_POINTS - 1) + 0.5f);
+
+	// Ensure index is in range
+	if (wear_index < 0) wear_index = 0;
+	if (wear_index >= MAX_POINTS) wear_index = MAX_POINTS - 1;
+
+	if (cws_test.tests[wear_index].tested == 0)
+	{
+		cws_test.tests[wear_index].tested = 1;
+		cws_test.tests[wear_index].passed = test_passed;
+		cws_test.done++;
+	}
+
+	return test_passed;
+
+
 }
 
 
@@ -556,6 +600,16 @@ void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
     }
 }
 
+void evaluate_test_result(void) {
+  // default result is passing
+  result = 1;
+  for(int x = 0; x < MAX_POINTS; ++x) {
+    if(cws_test.tests[x].passed == -1) {
+      result = -1;
+      break;
+    }
+  }
+}
 
 /* USER CODE END 4 */
 
