@@ -1,19 +1,19 @@
-18:04:08 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
+14:10:40 **** Incremental Build of configuration Debug for project BSTTestRelease_CM4 ****
 make -j8 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -D__LOG_TRACE_IO_ -DCORE_CM4 -DNO_ATOMIC_64_SUPPORT -DMETAL_INTERNAL -DMETAL_MAX_DEVICE_REGIONS=2 -DVIRTIO_SLAVE_ONLY -DUSE_HAL_DRIVER -DSTM32MP157Fxx -c -I../OPENAMP -I../Core/Inc -I../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include -I../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include -I../../Drivers/STM32MP1xx_HAL_Driver/Inc -I../../Drivers/STM32MP1xx_HAL_Driver/Inc/Legacy -I../../Drivers/CMSIS/Device/ST/STM32MP1xx/Include -I../../Middlewares/Third_Party/OpenAMP/virtual_driver -I../../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 ../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:274:10: warning: unused variable 'wrong_counter' [-Wunused-variable]
-  274 |   size_t wrong_counter = 0;
+../Core/Src/main.c:286:10: warning: unused variable 'wrong_counter' [-Wunused-variable]
+  286 |   size_t wrong_counter = 0;
       |          ^~~~~~~~~~~~~
-../Core/Src/main.c:259:12: warning: unused variable 'counter' [-Wunused-variable]
-  259 |   uint32_t counter = 0;
+../Core/Src/main.c:271:12: warning: unused variable 'counter' [-Wunused-variable]
+  271 |   uint32_t counter = 0;
       |            ^~~~~~~
 ../Core/Src/main.c: In function 'VIRT_UART0_RxCpltCallback':
-../Core/Src/main.c:775:12: warning: passing argument 1 to 'restrict'-qualified parameter aliases with argument 2 [-Wrestrict]
-  775 |     strcpy(response_buffer,response_buffer);
+../Core/Src/main.c:787:12: warning: passing argument 1 to 'restrict'-qualified parameter aliases with argument 2 [-Wrestrict]
+  787 |     strcpy(response_buffer,response_buffer);
       |            ^~~~~~~~~~~~~~~ ~~~~~~~~~~~~~~~
-../Core/Src/main.c:774:10: warning: unused variable 'response' [-Wunused-variable]
-  774 |     char response[] = "Testing with String Potentiometer\n";
+../Core/Src/main.c:786:10: warning: unused variable 'response' [-Wunused-variable]
+  786 |     char response[] = "Testing with String Potentiometer\n";
       |          ^~~~~~~~
 arm-none-eabi-gcc -o "BSTTestRelease_CM4.elf" @"objects.list"   -mcpu=cortex-m4 -T"/home/danb127/Brake-System-Tester/BSTTestRelease/CM4/STM32MP157FACX_RAM.ld" --specs=nosys.specs -Wl,-Map="BSTTestRelease_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: BSTTestRelease_CM4.elf
@@ -21,11 +21,11 @@ Finished building target: BSTTestRelease_CM4.elf
 arm-none-eabi-size  BSTTestRelease_CM4.elf 
 arm-none-eabi-objdump -h -S BSTTestRelease_CM4.elf  > "BSTTestRelease_CM4.list"
    text	   data	    bss	    dec	    hex	filename
-  60908	    288	  68924	 130120	  1fc48	BSTTestRelease_CM4.elf
+  63232	    288	  68932	 132452	  20564	BSTTestRelease_CM4.elf
 Finished building: default.size.stdout
  
 Finished building: BSTTestRelease_CM4.list
  
 
-18:04:09 Build Finished. 0 errors, 4 warnings. (took 618ms)
+14:10:42 Build Finished. 0 errors, 4 warnings. (took 1s.949ms)
 
