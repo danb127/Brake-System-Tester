@@ -267,7 +267,7 @@ int main(void)
     Error_Handler();
   }
   //csv header
-  printf("time(s),duty_cycle1(%%),duty_cycle2(%%),freq1(%%),freq2(%%),stroke(mm)\r\n");
+  printf("time(s),duty_cycle1(%%),duty_cycle2(%%),stroke(mm),freq1(%%),freq2(%%)\r\n");
   uint32_t counter = 0;
 
   // keep track of previous duty cycle to see if there is a large change
@@ -358,12 +358,12 @@ int main(void)
           int dc2 = (int)(100* duty_cycle2);
           int f1 = (int)frequency1;
           int f2 = (int)frequency2;
-          int strk = (int)(10* stroke);
+          int strk = (int)(100* stroke);
           //        DC1.x,DC2.x,MM.x ,F1,j2
-          log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d,%02d\r\n"
+          log_info("%02d.%02d,%02d.%02d,%d.%02d,%02d,%02d\r\n"
               ,dc1/100,dc1%100
               ,dc2/100,dc2%100,
-              strk/10,strk%10,
+              strk/100,strk%100,
               f1,f2);
           check_bst_values(stroke, duty_cycle1, duty_cycle2);
 
@@ -384,7 +384,7 @@ int main(void)
         int f2 = (int)frequency2;
         int strk = (int)(10* estimated_stroke);
         //        DC1.x,DC2.x,MM.x ,F1,j2  
-        log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d,%02d\r\n"
+        log_info("%02d.%02d,%02d.%02d,%02d.%d,%02d,%02d\r\n"
             ,dc1/100,dc1%100
             ,dc2/100,dc2%100,
             strk/10,strk%10,
