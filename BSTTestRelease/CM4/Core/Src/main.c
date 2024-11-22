@@ -255,7 +255,7 @@ int main(void)
     Error_Handler();
   }
   //csv header
-  printf("time(s),duty_cycle1(%%),duty_cycle2(%%),freq1(%%),freq2(%%),stroke(mm)\r\n");
+  printf("time(s),duty_cycle1(%%),duty_cycle2(%%),stroke(mm),freq1(%%),freq2(%%)\r\n");
   uint32_t counter = 0;
 
   // keep track of previous duty cycle to see if there is a large change
