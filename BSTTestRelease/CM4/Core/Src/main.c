@@ -372,7 +372,7 @@ int main(void)
         int f2 = (int)frequency2;
         int strk = (int)(10* estimated_stroke);
         //        DC1.x,DC2.x,MM.x ,F1,j2  
-        log_info("%02d.%02d,%02d.%02d,%02d.%02d,%02d,%02d\r\n"
+        log_info("%02d.%02d,%02d.%02d,%02d.%d,%02d,%02d\r\n"
             ,dc1/100,dc1%100
             ,dc2/100,dc2%100,
             strk/10,strk%10,
